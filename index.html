@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerador de Orçamentos · miligrama design</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f3ef; font-family: 'EB Garamond', Georgia, serif; color: #1a1a1a; }
+    input, textarea, button { font-family: inherit; }
+    input:focus, textarea:focus { border-color: #1a1a1a !important; background: #fff !important; outline: none; }
+    button { cursor: pointer; }
+    button:hover { opacity: 0.85; }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 48px 40px; min-height: 100vh; }
+
+    .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 44px; padding-bottom: 24px; border-bottom: 1px solid #1a1a1a; }
+    h1 { font-size: 40px; font-weight: 400; font-style: italic; margin: 0; letter-spacing: -0.8px; line-height: 1; }
+    .subtitulo { font-size: 11px; color: #888; margin: 8px 0 0 0; text-transform: uppercase; letter-spacing: 2.5px; font-family: 'JetBrains Mono', monospace; }
+    h2 { font-size: 26px; font-style: italic; font-weight: 400; margin: 0; letter-spacing: -0.3px; }
+
+    .header-right { display: flex; gap: 16px; align-items: flex-end; }
+    .contador-box { display: flex; flex-direction: column; align-items: flex-end; padding-right: 20px; border-right: 1px solid #ccc; }
+    .contador-label { font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: 2px; font-family: 'JetBrains Mono', monospace; margin-bottom: 2px; }
+    .contador-num { font-size: 20px; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+
+    .secao { margin-bottom: 48px; }
+    .secao-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 24px; padding-bottom: 10px; border-bottom: 1px solid #1a1a1a; }
+
+    label { display: block; font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1.8px; margin-bottom: 8px; margin-top: 16px; font-family: 'JetBrains Mono', monospace; }
+    input, textarea { width: 100%; padding: 11px 14px; border: 1px solid #d0ccc3; border-radius: 0; font-size: 15px; background: #fafaf7; color: #1a1a1a; transition: all 0.15s; }
+    textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+
+    .cartao { padding: 28px; border: 1px solid #d0ccc3; margin-bottom: 18px; background: #fff; position: relative; }
+    .cartao-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .cartao-num { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #999; letter-spacing: 2px; }
+
+    .linha-campos { display: flex; gap: 18px; margin-bottom: 4px; }
+    .linha-campos > div { flex: 1; }
+    .linha-campos > .flex2 { flex: 2; }
+    .linha-item { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+
+    .btn-add { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1px solid #1a1a1a; background: #fff; color: #1a1a1a; font-size: 11px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1.2px; }
+    .btn-add-inline { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border: 1px dashed #aaa; background: transparent; color: #666; font-size: 10px; font-family: 'JetBrains Mono', monospace; }
+    .btn-remover { border: none; background: transparent; color: #999; padding: 4px; }
+    .btn-remover-icon { border: none; background: transparent; color: #ccc; padding: 6px; font-size: 14px; }
+    .btn-secundario { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border: 1px solid #d0ccc3; background: #fff; color: #666; font-size: 11px; font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
+    .btn-primario { display: inline-flex; align-items: center; gap: 8px; padding: 13px 26px; border: none; background: #1a1a1a; color: #fff; font-size: 12px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1.5px; }
+    .btn-preview { display: inline-flex; align-items: center; gap: 8px; padding: 15px 32px; border: 1px solid #1a1a1a; background: #1a1a1a; color: #fff; font-size: 12px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1.5px; }
+    .btn-link { border: none; background: none; color: #888; font-size: 11px; font-family: 'JetBrains Mono', monospace; text-decoration: underline; letter-spacing: 0.5px; }
+
+    .rodape-acoes { display: flex; justify-content: flex-end; padding: 28px 0; border-top: 1px solid #1a1a1a; margin-top: 48px; }
+    .seletor-exemplo { margin-bottom: 24px; text-align: right; }
+
+    .aviso-erro { padding: 20px 22px; background: #fffbeb; border: 1px solid #d97706; margin-bottom: 24px; }
+    .aviso-erro-titulo { font-size: 14px; color: #92400e; font-weight: 500; font-style: italic; }
+    .aviso-erro-texto { font-size: 13px; color: #78350f; line-height: 1.55; margin: 4px 0 12px 0; }
+    .aviso-erro-link { font-size: 11px; color: #92400e; text-decoration: underline; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px; }
+    .aviso-erro-fechar { border: none; background: transparent; color: #92400e; font-size: 22px; padding: 0; line-height: 1; }
+
+    .preview-box { border: 1px solid #d0ccc3; background: #fff; box-shadow: 0 8px 40px rgba(0,0,0,0.08); overflow: auto; }
+    .proposta-pronta-box { text-align: center; padding: 60px 20px; border: 1px solid #d0ccc3; background: #fff; margin-bottom: 40px; }
+    .selo { width: 56px; height: 56px; border-radius: 50%; background: #1a1a1a; color: #fff; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 14px 10px; font-size: 10px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1.8px; color: #999; border-bottom: 1px solid #1a1a1a; }
+    tr { border-bottom: 1px solid #e8e4dc; }
+    td { padding: 14px 10px; font-size: 15px; }
+
+    /* ===== Documento da proposta ===== */
+    .pagina { width: 210mm; min-height: 297mm; padding: 20mm; background: #fff; font-family: 'EB Garamond', Georgia, serif; color: #1a1a1a; font-size: 11px; line-height: 1.6; }
+    .doc-cabecalho { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 18px; border-bottom: 1px solid #1a1a1a; margin-bottom: 32px; }
+    .doc-logo { font-size: 30px; font-style: italic; font-weight: 400; letter-spacing: -0.8px; margin-bottom: 16px; line-height: 1; }
+    .doc-endereco, .doc-contato { font-size: 9.5px; color: #555; font-family: 'JetBrains Mono', monospace; line-height: 1.7; margin-bottom: 8px; }
+    .doc-proposta-box { text-align: right; }
+    .doc-proposta-num { font-size: 9px; text-transform: uppercase; letter-spacing: 2.5px; color: #999; font-family: 'JetBrains Mono', monospace; }
+    .doc-proposta-num-big { font-size: 24px; font-family: 'JetBrains Mono', monospace; font-weight: 500; margin-top: 3px; letter-spacing: -0.5px; }
+    .doc-proposta-data { font-size: 9.5px; color: #555; font-family: 'JetBrains Mono', monospace; margin-top: 10px; }
+    .doc-secao { margin-bottom: 32px; }
+    .doc-secao-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2.8px; color: #999; font-family: 'JetBrains Mono', monospace; margin-bottom: 10px; }
+    .doc-cliente-nome { font-size: 28px; font-style: italic; font-weight: 400; margin-bottom: 10px; letter-spacing: -0.5px; line-height: 1.1; }
+    .doc-apresentacao-txt { font-size: 12.5px; line-height: 1.6; color: #333; margin: 0; max-width: 82%; }
+    .doc-servico { padding-top: 22px; padding-bottom: 22px; border-top: 1px solid #1a1a1a; }
+    .doc-servico-header { display: grid; grid-template-columns: 32px 1fr auto auto; gap: 18px; align-items: baseline; margin-bottom: 10px; }
+    .doc-servico-num { font-size: 10px; color: #999; font-family: 'JetBrains Mono', monospace; letter-spacing: 1.5px; }
+    .doc-servico-titulo { font-size: 20px; font-style: italic; font-weight: 400; letter-spacing: -0.3px; }
+    .doc-servico-prazo { font-size: 9.5px; color: #666; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1.2px; white-space: nowrap; }
+    .doc-servico-valor { font-size: 15px; font-family: 'JetBrains Mono', monospace; font-weight: 500; white-space: nowrap; }
+    .doc-servico-parcelas { color: #999; font-size: 10px; }
+    .doc-servico-desc { font-size: 11px; color: #444; margin-left: 50px; margin-bottom: 14px; margin-top: 0; max-width: 85%; font-style: italic; }
+    .doc-itens-lista { margin-left: 50px; }
+    .doc-item { display: grid; grid-template-columns: 150px 1fr; gap: 16px; margin-bottom: 6px; font-size: 11px; align-items: baseline; }
+    .doc-item-rotulo { color: #999; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.2px; padding-top: 2px; }
+    .doc-item-conteudo { color: #1a1a1a; line-height: 1.55; }
+    .doc-cronograma-intro { font-size: 10px; color: #888; font-style: italic; max-width: 75%; margin-bottom: 16px; }
+    .doc-cronograma-linha { display: flex; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid #eee; font-size: 11px; }
+    .doc-cronograma-etapa { color: #333; flex: 1; padding-right: 16px; }
+    .doc-cronograma-duracao { color: #666; font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; white-space: nowrap; }
+    .doc-observacoes { margin-top: 40px; padding-top: 22px; border-top: 1px solid #1a1a1a; }
+    .doc-obs-bloco { margin-bottom: 18px; }
+    .doc-obs-titulo { display: block; font-size: 9.5px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1.8px; margin-bottom: 5px; font-weight: 500; }
+    .doc-obs-txt { font-size: 10px; color: #555; line-height: 1.6; margin: 0; }
+    .doc-rodape { margin-top: 50px; }
+    .doc-assinatura-linha { border-bottom: 1px solid #1a1a1a; height: 32px; margin-bottom: 5px; }
+    .doc-assinatura-label { font-size: 9px; color: #999; text-transform: uppercase; letter-spacing: 2.2px; font-family: 'JetBrains Mono', monospace; }
+
+    /* ===== Impressão ===== */
+    @media print {
+      @page { size: A4; margin: 0; }
+      body * { visibility: hidden; }
+      #area-impressao, #area-impressao * { visibility: visible; }
+      #area-impressao { position: absolute; left: 0; top: 0; width: 100%; }
+      .no-print { display: none !important; }
+      .preview-box { border: none; box-shadow: none; }
+      .pagina { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel" data-presets="react">
+    const { useState, useEffect } = React;
+
+    // ===== Config Supabase =====
+    const SUPABASE_URL = "https://ldhvbytncnanmgdrystt.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkaHZieXRuY25hbm1nZHJ5c3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNDQ1NjIsImV4cCI6MjA5MjYyMDU2Mn0.EFFvrZIdPt-5bF4gRa-YZv4mQyL9wtkwFfuMDNVDA6c";
+
+    async function sb(path, options = {}) {
+      let res;
+      try {
+        res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+          ...options,
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json",
+            Prefer: "return=representation",
+            ...(options.headers || {}),
+          },
+        });
+      } catch (e) {
+        throw new Error("CONEXAO_FALHOU");
+      }
+      if (!res.ok) {
+        const texto = await res.text();
+        if (res.status === 403 && texto.includes("allowlist")) throw new Error("ALLOWLIST");
+        throw new Error(`Supabase ${res.status}: ${texto}`);
+      }
+      return res.json();
+    }
+
+    async function obterProximoNumero() {
+      let res;
+      try {
+        res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/obter_proximo_numero_proposta`, {
+          method: "POST",
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: "{}",
+        });
+      } catch (e) { throw new Error("CONEXAO_FALHOU"); }
+      if (!res.ok) {
+        const texto = await res.text();
+        if (res.status === 403 && texto.includes("allowlist")) throw new Error("ALLOWLIST");
+        throw new Error("Falha ao obter número");
+      }
+      return res.json();
+    }
+
+    const DADOS_FIXOS = {
+      nome: "miligrama design",
+      endereco: "rua caraíbas, 1335",
+      cidade: "são paulo, sp",
+      telefone: "+55 85 98615.1263",
+      email: "rodrigomiligrama@gmail.com",
+    };
+
+    function formatarValor(n) {
+      if (!n && n !== 0) return "R$ 0,00";
+      return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
+    }
+
+    function formatarData(d = new Date()) {
+      const meses = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+      return `são paulo, ${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
+    }
+
+    function numeroProposta(n, ano) {
+      return `${String(n).padStart(4, "0")}/${ano}`;
+    }
+
+    function criarServicoVazio() {
+      return { titulo: "", prazo: "", valor: "", parcelas: "", descricao: "", itens: [{ rotulo: "", conteudo: "" }] };
+    }
+    function criarEtapaVazia() { return { nome: "", duracao: "" }; }
+
+    // ============ App ============
+    function App() {
+      const [tela, setTela] = useState("form");
+      const [cliente, setCliente] = useState("");
+      const [apresentacao, setApresentacao] = useState("");
+      const [validadeDias, setValidadeDias] = useState(30);
+      const [servicos, setServicos] = useState([criarServicoVazio()]);
+      const [cronograma, setCronograma] = useState([criarEtapaVazia()]);
+      const [proximoNum, setProximoNum] = useState(null);
+      const [historico, setHistorico] = useState([]);
+      const [gerando, setGerando] = useState(false);
+      const [erro, setErro] = useState(null);
+      const [propostaFinal, setPropostaFinal] = useState(null);
+
+      useEffect(() => {
+        sb("proposta_contador?select=proximo_numero&id=eq.1")
+          .then((rows) => setProximoNum(rows[0]?.proximo_numero || 12))
+          .catch((e) => setErro(e.message));
+      }, []);
+
+      function atualizarServico(idx, campo, valor) {
+        const novo = [...servicos];
+        novo[idx] = { ...novo[idx], [campo]: valor };
+        setServicos(novo);
+      }
+      function atualizarItemServico(sIdx, iIdx, campo, valor) {
+        const novo = [...servicos];
+        novo[sIdx].itens[iIdx] = { ...novo[sIdx].itens[iIdx], [campo]: valor };
+        setServicos(novo);
+      }
+      function adicionarItemServico(sIdx) {
+        const novo = [...servicos];
+        novo[sIdx].itens.push({ rotulo: "", conteudo: "" });
+        setServicos(novo);
+      }
+      function removerItemServico(sIdx, iIdx) {
+        const novo = [...servicos];
+        novo[sIdx].itens = novo[sIdx].itens.filter((_, i) => i !== iIdx);
+        setServicos(novo);
+      }
+      function adicionarServico() { setServicos([...servicos, criarServicoVazio()]); }
+      function removerServico(idx) { setServicos(servicos.filter((_, i) => i !== idx)); }
+      function atualizarEtapa(idx, campo, valor) {
+        const novo = [...cronograma];
+        novo[idx] = { ...novo[idx], [campo]: valor };
+        setCronograma(novo);
+      }
+      function adicionarEtapa() { setCronograma([...cronograma, criarEtapaVazia()]); }
+      function removerEtapa(idx) { setCronograma(cronograma.filter((_, i) => i !== idx)); }
+
+      async function carregarHistorico() {
+        try {
+          const rows = await sb("propostas_geradas?select=*&order=criado_em.desc&limit=50");
+          setHistorico(rows);
+          setTela("historico");
+        } catch (e) { setErro(e.message); }
+      }
+
+      async function confirmarEsalvar() {
+        setGerando(true);
+        setErro(null);
+        try {
+          const numero = await obterProximoNumero();
+          const ano = new Date().getFullYear();
+          const numeroFmt = numeroProposta(numero, ano);
+          const valorTotal = servicos.reduce((s, sv) => s + (parseFloat(sv.valor) || 0), 0);
+
+          await sb("propostas_geradas", {
+            method: "POST",
+            body: JSON.stringify({
+              numero_proposta: numeroFmt, ano, cliente: cliente || "sem nome",
+              apresentacao, servicos, cronograma, validade_dias: validadeDias, valor_total: valorTotal,
+            }),
+          });
+
+          setProximoNum(numero + 1);
+          setPropostaFinal({ numeroFmt, cliente, apresentacao, servicos, cronograma, validadeDias });
+          setTela("pronto");
+        } catch (e) { setErro(e.message); } finally { setGerando(false); }
+      }
+
+      function temDadosPreenchidos() {
+        if (cliente || apresentacao) return true;
+        if (servicos.some(s => s.titulo || s.valor || s.descricao || s.itens.some(i => i.rotulo || i.conteudo))) return true;
+        if (cronograma.some(c => c.nome || c.duracao)) return true;
+        return false;
+      }
+
+      function zerarFormulario() {
+        if (temDadosPreenchidos() && !window.confirm("Tem certeza que deseja zerar todos os campos? Isso não pode ser desfeito.")) return;
+        setCliente(""); setApresentacao(""); setValidadeDias(30);
+        setServicos([criarServicoVazio()]); setCronograma([criarEtapaVazia()]);
+        setErro(null);
+      }
+
+      function preencherExemplo() {
+        setCliente("Unkê");
+        setApresentacao("Criação de material gráfico de sinalização para obra e escritório, além de uniforme, seguindo as diretrizes de identidade visuais já estabelecidas em brandbook do cliente.");
+        setValidadeDias(30);
+        setServicos([
+          {
+            titulo: "Sinalização",
+            prazo: "7 dias úteis",
+            valor: "1500",
+            parcelas: "50% no início e 50% na entrega",
+            descricao: "Criação de layouts em tamanho real para impressão de placas de obra e escritório, seguindo direcionamentos do brandbook do cliente. Criação de ícones conforme necessário.",
+            itens: [
+              { rotulo: "sinalização obras", conteudo: "7 placas" },
+              { rotulo: "sinalização escritório", conteudo: "3 placas" },
+            ],
+          },
+          {
+            titulo: "Uniforme",
+            prazo: "3 dias úteis",
+            valor: "400",
+            parcelas: "50% no início e 50% na entrega",
+            descricao: "Criação de layout para uniforme.",
+            itens: [{ rotulo: "", conteudo: "" }],
+          },
+        ]);
+        setCronograma([
+          { nome: "Criação", duracao: "10 dias úteis" },
+        ]);
+      }
+
+      if (tela === "historico") return <TelaHistorico historico={historico} onVoltar={() => setTela("form")} />;
+
+      if (tela === "pronto") {
+        return <TelaPronta proposta={propostaFinal} onNova={() => {
+          setPropostaFinal(null);
+          setCliente(""); setApresentacao(""); setValidadeDias(30);
+          setServicos([criarServicoVazio()]); setCronograma([criarEtapaVazia()]);
+          setTela("form");
+        }} />;
+      }
+
+      if (tela === "preview") {
+        return (
+          <div className="container" style={{paddingTop: 20}}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20, gap: 12 }}>
+              <button className="btn-secundario" onClick={() => setTela("form")}>← voltar e editar</button>
+              <button className="btn-primario" onClick={confirmarEsalvar} disabled={gerando} style={{opacity: gerando ? 0.5 : 1}}>
+                ⬇ {gerando ? "salvando..." : `confirmar ${numeroProposta(proximoNum, new Date().getFullYear())}`}
+              </button>
+            </div>
+            {erro && <AvisoErro erro={erro} onFechar={() => setErro(null)} />}
+            <div className="preview-box">
+              <PropostaRender
+                numeroFmt={numeroProposta(proximoNum || 12, new Date().getFullYear())}
+                cliente={cliente} apresentacao={apresentacao}
+                servicos={servicos} cronograma={cronograma} validadeDias={validadeDias}
+              />
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="container">
+          <header className="header">
+            <div>
+              <h1>Gerador de Orçamentos</h1>
+              <p className="subtitulo">miligrama design</p>
+            </div>
+            <div className="header-right">
+              <div className="contador-box">
+                <span className="contador-label">próxima</span>
+                <span className="contador-num">
+                  {proximoNum ? numeroProposta(proximoNum, new Date().getFullYear()) : "—"}
+                </span>
+              </div>
+              <button className="btn-secundario" onClick={zerarFormulario}>↺ zerar</button>
+              <button className="btn-secundario" onClick={carregarHistorico}>⏲ histórico</button>
+            </div>
+          </header>
+
+          {erro && <AvisoErro erro={erro} onFechar={() => setErro(null)} />}
+
+          <div className="seletor-exemplo">
+            <button className="btn-link" onClick={preencherExemplo}>carregar proposta Unkê →</button>
+          </div>
+
+          <section className="secao">
+            <label>cliente</label>
+            <input value={cliente} onChange={(e) => setCliente(e.target.value)} placeholder="Nome do cliente ou projeto" />
+
+            <label>apresentação resumida</label>
+            <textarea value={apresentacao} onChange={(e) => setApresentacao(e.target.value)} placeholder="Texto de apresentação do projeto..." rows={3} />
+
+            <label>validade (dias)</label>
+            <input type="number" style={{width: 140}} value={validadeDias} onChange={(e) => setValidadeDias(parseInt(e.target.value) || 30)} />
+          </section>
+
+          <section className="secao">
+            <div className="secao-header">
+              <h2>Serviços</h2>
+              <button className="btn-add" onClick={adicionarServico}>+ serviço</button>
+            </div>
+
+            {servicos.map((sv, sIdx) => (
+              <div key={sIdx} className="cartao">
+                <div className="cartao-header">
+                  <span className="cartao-num">{String(sIdx + 1).padStart(2, "0")}</span>
+                  {servicos.length > 1 && <button className="btn-remover" onClick={() => removerServico(sIdx)}>✕</button>}
+                </div>
+
+                <div className="linha-campos">
+                  <div className="flex2">
+                    <label>título</label>
+                    <input value={sv.titulo} onChange={(e) => atualizarServico(sIdx, "titulo", e.target.value)} placeholder="Design de Identidade" />
+                  </div>
+                  <div>
+                    <label>prazo</label>
+                    <input value={sv.prazo} onChange={(e) => atualizarServico(sIdx, "prazo", e.target.value)} placeholder="35 dias úteis" />
+                  </div>
+                </div>
+
+                <div className="linha-campos">
+                  <div>
+                    <label>valor (R$)</label>
+                    <input type="number" step="0.01" value={sv.valor} onChange={(e) => atualizarServico(sIdx, "valor", e.target.value)} placeholder="8000" />
+                  </div>
+                  <div>
+                    <label>parcelas</label>
+                    <input value={sv.parcelas} onChange={(e) => atualizarServico(sIdx, "parcelas", e.target.value)} placeholder="1+2 vezes" />
+                  </div>
+                </div>
+
+                <label>descrição</label>
+                <textarea value={sv.descricao} onChange={(e) => atualizarServico(sIdx, "descricao", e.target.value)} placeholder="Descrição do serviço..." rows={2} />
+
+                <div style={{ marginTop: 18 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                    <label style={{marginBottom: 0, marginTop: 0}}>entregáveis</label>
+                    <button className="btn-add-inline" onClick={() => adicionarItemServico(sIdx)}>+ item</button>
+                  </div>
+                  {sv.itens.map((item, iIdx) => (
+                    <div key={iIdx} className="linha-item">
+                      <input style={{flex: 1}} value={item.rotulo} onChange={(e) => atualizarItemServico(sIdx, iIdx, "rotulo", e.target.value)} placeholder="rótulo" />
+                      <input style={{flex: 3}} value={item.conteudo} onChange={(e) => atualizarItemServico(sIdx, iIdx, "conteudo", e.target.value)} placeholder="conteúdo" />
+                      {sv.itens.length > 1 && <button className="btn-remover-icon" onClick={() => removerItemServico(sIdx, iIdx)}>✕</button>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </section>
+
+          <section className="secao">
+            <div className="secao-header">
+              <h2>Cronograma</h2>
+              <button className="btn-add" onClick={adicionarEtapa}>+ etapa</button>
+            </div>
+
+            {cronograma.map((et, idx) => (
+              <div key={idx} className="linha-item">
+                <input style={{flex: 3}} value={et.nome} onChange={(e) => atualizarEtapa(idx, "nome", e.target.value)} placeholder="Nome da etapa" />
+                <input style={{flex: 1}} value={et.duracao} onChange={(e) => atualizarEtapa(idx, "duracao", e.target.value)} placeholder="05 dias úteis" />
+                {cronograma.length > 1 && <button className="btn-remover-icon" onClick={() => removerEtapa(idx)}>✕</button>}
+              </div>
+            ))}
+          </section>
+
+          <div className="rodape-acoes">
+            <button className="btn-preview" onClick={() => setTela("preview")}>◉ visualizar proposta</button>
+          </div>
+        </div>
+      );
+    }
+
+    function TelaPronta({ proposta, onNova }) {
+      // Padronizar nome do arquivo: 0012_2026_NomeDoCliente
+      // numeroFmt vem no formato "0012/2026" — separamos o número e o ano
+      const [numero, ano] = proposta.numeroFmt.split("/");
+      const nomeCliente = (proposta.cliente || "sem-nome")
+        .trim()
+        .replace(/\s+/g, "_")         // espaços viram _
+        .replace(/[\/\\:*?"<>|]/g, ""); // remove caracteres proibidos em nomes de arquivo
+      const nomeArquivo = `${numero}_${ano}_${nomeCliente}`;
+
+      // Muda o título da aba (navegador usa isso como sugestão de nome ao salvar PDF)
+      useEffect(() => {
+        const tituloOriginal = document.title;
+        document.title = nomeArquivo;
+        return () => { document.title = tituloOriginal; };
+      }, [nomeArquivo]);
+
+      function imprimir() { window.print(); }
+      return (
+        <div>
+          <div className="container no-print">
+            <div className="proposta-pronta-box">
+              <div className="selo">✓</div>
+              <h1 style={{fontSize: 32}}>Proposta {proposta.numeroFmt} salva</h1>
+              <p style={{fontSize: 14, color: "#666", fontStyle: "italic", marginTop: 12}}>
+                Para gerar o PDF, clique em imprimir e escolha "Salvar como PDF" no diálogo.<br />
+                O nome sugerido será: <code style={{fontFamily: "'JetBrains Mono', monospace", fontSize: 12, background: "#f5f3ef", padding: "2px 8px"}}>{nomeArquivo}.pdf</code>
+              </p>
+              <div style={{ display: "flex", gap: 12, marginTop: 28, justifyContent: "center" }}>
+                <button className="btn-primario" onClick={imprimir}>⎙ imprimir / salvar PDF</button>
+                <button className="btn-secundario" onClick={onNova}>nova proposta</button>
+              </div>
+            </div>
+            <div className="preview-box" style={{marginTop: 40}}>
+              <div id="area-impressao">
+                <PropostaRender {...proposta} />
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function TelaHistorico({ historico, onVoltar }) {
+      return (
+        <div className="container">
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 32, alignItems: "baseline" }}>
+            <h1>Histórico</h1>
+            <button className="btn-secundario" onClick={onVoltar}>← voltar</button>
+          </div>
+          {historico.length === 0 ? (
+            <p style={{ color: "#999", fontStyle: "italic" }}>Nenhuma proposta gerada ainda.</p>
+          ) : (
+            <table>
+              <thead>
+                <tr><th>nº</th><th>cliente</th><th>valor</th><th>data</th></tr>
+              </thead>
+              <tbody>
+                {historico.map((p) => (
+                  <tr key={p.id}>
+                    <td><code style={{fontFamily: "'JetBrains Mono', monospace", fontSize: 12}}>{p.numero_proposta}</code></td>
+                    <td style={{fontStyle: "italic"}}>{p.cliente}</td>
+                    <td style={{fontFamily: "'JetBrains Mono', monospace", fontSize: 12}}>{formatarValor(p.valor_total)}</td>
+                    <td style={{color: "#999", fontSize: 12, fontFamily: "'JetBrains Mono', monospace"}}>
+                      {new Date(p.criado_em).toLocaleDateString("pt-BR")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      );
+    }
+
+    function PropostaRender({ numeroFmt, cliente, apresentacao, servicos, cronograma, validadeDias }) {
+      return (
+        <div className="pagina">
+          <header className="doc-cabecalho">
+            <div>
+              <div className="doc-logo">{DADOS_FIXOS.nome}</div>
+              <div className="doc-endereco">{DADOS_FIXOS.endereco}<br />{DADOS_FIXOS.cidade}</div>
+              <div className="doc-contato">T {DADOS_FIXOS.telefone}<br />{DADOS_FIXOS.email}</div>
+            </div>
+            <div className="doc-proposta-box">
+              <div className="doc-proposta-num">proposta</div>
+              <div className="doc-proposta-num-big">nº {numeroFmt}</div>
+              <div className="doc-proposta-data">{formatarData()}</div>
+            </div>
+          </header>
+
+          <section className="doc-secao">
+            <div className="doc-secao-label">apresentação</div>
+            <div className="doc-cliente-nome">{cliente || "—"}</div>
+            <p className="doc-apresentacao-txt">{apresentacao}</p>
+          </section>
+
+          {servicos.map((sv, i) => (
+            <section key={i} className="doc-servico">
+              <div className="doc-servico-header">
+                <span className="doc-servico-num">{String(i + 1).padStart(2, "0")}</span>
+                <span className="doc-servico-titulo">{sv.titulo}</span>
+                <span className="doc-servico-prazo">{sv.prazo}</span>
+                <span className="doc-servico-valor">
+                  {formatarValor(parseFloat(sv.valor) || 0)}
+                  {sv.parcelas && <span className="doc-servico-parcelas"> · {sv.parcelas}</span>}
+                </span>
+              </div>
+              {sv.descricao && <p className="doc-servico-desc">{sv.descricao}</p>}
+              <div className="doc-itens-lista">
+                {sv.itens.filter((it) => it.rotulo || it.conteudo).map((it, j) => (
+                  <div key={j} className="doc-item">
+                    <span className="doc-item-rotulo">{it.rotulo}</span>
+                    <span className="doc-item-conteudo">{it.conteudo}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))}
+
+          <section className="doc-secao">
+            <div className="doc-secao-label">cronograma</div>
+            <div className="doc-cronograma-intro">
+              O cronograma pode sofrer alterações de acordo com a necessidade, pacote escolhido e prazo do cliente, podendo ocasionar custos extras para prazos emergenciais.
+            </div>
+            <div>
+              {cronograma.filter((e) => e.nome || e.duracao).map((e, i) => (
+                <div key={i} className="doc-cronograma-linha">
+                  <span className="doc-cronograma-etapa">{e.nome}</span>
+                  <span className="doc-cronograma-duracao">{e.duracao}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="doc-observacoes">
+            <div className="doc-secao-label">observações importantes</div>
+            <div className="doc-obs-bloco">
+              <strong className="doc-obs-titulo">acompanhamento gráfico</strong>
+              <p className="doc-obs-txt">
+                O percentual de acompanhamento gráfico é de 15% sobre o valor dos serviços dos fornecedores. Serve para que o cliente tenha suporte técnico especializado durante a produção em gráfica. A responsabilidade técnica da empresa de design ocorre somente até a aprovação da prova digital. Serviço opcional, mas de grande importância.
+              </p>
+            </div>
+            <div className="doc-obs-bloco">
+              <strong className="doc-obs-titulo">taxa de urgência</strong>
+              <p className="doc-obs-txt">
+                Ocorre quando os prazos para criação/editoração/layout são menores do que os habituais, ou quando o serviço demanda horas extras ou contratação extraordinária de profissionais.
+              </p>
+            </div>
+            <div className="doc-obs-bloco">
+              <strong className="doc-obs-titulo">validade da proposta</strong>
+              <p className="doc-obs-txt">
+                Esta proposta é válida por {validadeDias} dias a partir da data de emissão. Após esse período, os valores e prazos podem ser reajustados.
+              </p>
+            </div>
+            <div className="doc-obs-bloco">
+              <strong className="doc-obs-titulo">disposições gerais</strong>
+              <p className="doc-obs-txt">
+                Não estão inclusos: produção de conteúdo (textos, imagens), custos de impressão, distribuição, produção fotográfica e provas gráficas. Prazos contados a partir do primeiro pagamento. Mudanças conceituais no briefing após aprovação acarretam custos adicionais. Este orçamento engloba 1 (uma) alteração de layout. Arquivos digitais passam a ser propriedade do Cliente somente após o pagamento final.
+              </p>
+            </div>
+          </section>
+
+          <footer className="doc-rodape">
+            <div className="doc-assinatura-linha"></div>
+            <div className="doc-assinatura-label">assinatura contratante</div>
+          </footer>
+        </div>
+      );
+    }
+
+    function AvisoErro({ erro, onFechar }) {
+      let titulo, corpo, url;
+      if (erro === "ALLOWLIST") {
+        titulo = "Acesso bloqueado pela allowlist do Supabase";
+        corpo = "Seu projeto Supabase está com restrição de rede ativa. Acesse Settings → Network Restrictions no painel e libere o acesso.";
+        url = "https://supabase.com/dashboard/project/ldhvbytncnanmgdrystt/settings/database";
+      } else if (erro === "CONEXAO_FALHOU") {
+        titulo = "Falha ao conectar com o Supabase";
+        corpo = "Não foi possível se comunicar com o banco. Verifique sua conexão de internet ou se o projeto está pausado.";
+        url = "https://supabase.com/dashboard/project/ldhvbytncnanmgdrystt";
+      } else {
+        titulo = "Erro";
+        corpo = erro;
+      }
+      return (
+        <div className="aviso-erro">
+          <div style={{display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8}}>
+            <strong className="aviso-erro-titulo">{titulo}</strong>
+            <button onClick={onFechar} className="aviso-erro-fechar">×</button>
+          </div>
+          <p className="aviso-erro-texto">{corpo}</p>
+          {url && <a href={url} target="_blank" rel="noopener noreferrer" className="aviso-erro-link">abrir painel do Supabase ↗</a>}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
