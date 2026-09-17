@@ -130,8 +130,9 @@
     .template-modulo-conteudo { font-size: 11.5px; color: var(--rp-gray); line-height: 1.4; }
     .template-modulo-dias { font-size: 12px; color: var(--rp-gray); white-space: nowrap; padding-top: 2px; }
 
-    .template-resumo { display: flex; flex-direction: column; gap: 20px; }
-    .template-prazo { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding-bottom: 18px; border-bottom: 1px solid var(--linha); }
+    .template-variante { font-size: 13px; color: var(--rp-gray); letter-spacing: 0.02em; }
+    .template-resumo { display: flex; flex-direction: column; gap: 14px; }
+    .template-prazo { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding-bottom: 18px; border-bottom: 1px solid var(--linha); margin-top: -6px; }
     .template-prazo-num { font-size: 44px; font-weight: 500; letter-spacing: -0.03em; line-height: 1; }
     .template-prazo-label { font-size: 13px; color: var(--rp-gray); }
     .template-prazo-obs { font-size: 11px; color: var(--rp-yellow); width: 100%; margin-top: 2px; }
@@ -473,6 +474,7 @@
       {
         id: "identidade",
         nome: "Design de Identidade",
+        tituloPadrao: "Design de Identidade",
         descricao: "utilizaremos a metodologia sem receita na criação de marcas, com documentação de todo o material produzido entregue de forma digital no final do projeto.",
         modulos: [
           { id: "estrategia", rotulo: "estratégia", dias: 10, padrao: true,
@@ -508,10 +510,60 @@
           { cliente: "Brisanet",       ano: 2022, modulos: 7, dias: 45, valor: 17200 },
         ],
       },
+      {
+        id: "site",
+        nome: "Site",
+        tituloPadrao: "Site (interface)",
+        // quando os modulos de dev entram, o titulo do servico muda
+        variantes: [
+          { requer: ["programacao"], titulo: "Site (interface + desenvolvimento)" },
+        ],
+        descricao: "",
+        // Dias derivados das duas variacoes da proposta 026/2022 (FCR):
+        // so interface = 15 dias (pesquisa+layout+UI), com dev = 45.
+        modulos: [
+          { id: "pesquisa", rotulo: "pesquisa", dias: 5, padrao: true,
+            conteudo: "imersão para entender e desenvolver toda a estrutura e arquitetura do site e suas páginas",
+            etapa: "Pesquisa e arquitetura de informação" },
+          { id: "layout", rotulo: "layout", dias: 4, padrao: true,
+            conteudo: "criação de páginas-chave, buscando a aprovação e o alinhamento",
+            etapa: "Layout das páginas-chave (busca aprovação)" },
+          { id: "ui", rotulo: "user interface", dias: 6, padrao: true, obrigatorio: true,
+            conteudo: "montagem de layout exclusivo com a identidade do cliente, com foco na usabilidade e na interface de todas as plataformas (computadores, smartphones, tablets)",
+            etapa: "User interface e responsividade" },
+          { id: "programacao", rotulo: "programação", dias: 15, padrao: true,
+            conteudo: "montagem HTML/CSS do layout de forma responsiva, com área de homologação para o cliente acompanhar e validar o andamento",
+            etapa: "Programação e área de homologação" },
+          { id: "implementacao", rotulo: "implementação", dias: 8, padrao: true,
+            conteudo: "implementação do gerenciamento de conteúdo, com documentação de uso das ferramentas para o cliente dar continuidade",
+            etapa: "Implementação do gerenciador de conteúdo" },
+          { id: "configuracoes", rotulo: "configurações", dias: 7, padrao: true,
+            conteudo: "configurações de SEO para as principais ferramentas de busca e redes sociais, hospedagem e publicação após a validação na homologação",
+            etapa: "SEO, hospedagem e publicação" },
+        ],
+        etapasFixas: [],
+        // entram na descricao do servico; "requer" limita a nota a um modulo
+        observacoes: [
+          { texto: "O conteúdo do site, textual e fotográfico, é fornecido pelo cliente." },
+          { requer: "programacao",
+            texto: "Após a entrega do site, fazemos um acompanhamento gratuito durante 30 dias. Depois desse período, qualquer ajuste está sujeito a orçamento." },
+        ],
+        referencias: [
+          { cliente: "FCR · interface", ano: 2022, modulos: 3, dias: 15, valor: 4000 },
+          { cliente: "FCR · interface + dev", ano: 2022, modulos: 6, dias: 45, valor: 12000 },
+        ],
+      },
     ];
 
     // Arredonda pra cima no multiplo de 5 — nunca prometer menos prazo do que a conta deu.
     function arredondarPrazo(dias) { return Math.ceil(dias / 5) * 5; }
+
+    // O titulo do servico muda conforme os modulos escolhidos: a primeira
+    // variante cujos modulos estejam TODOS marcados vence.
+    function tituloDoTemplate(template, marcados) {
+      const v = (template.variantes || []).find((v) => v.requer.every((id) => marcados[id]));
+      return v ? v.titulo : (template.tituloPadrao || template.nome);
+    }
 
     function montarTemplate(template, marcados) {
       const escolhidos = template.modulos.filter((m) => marcados[m.id]);
@@ -519,12 +571,18 @@
                    template.etapasFixas.reduce((t, e) => t + e.dias, 0);
       const prazo = arredondarPrazo(dias);
 
+      // notas sem "requer" valem sempre; com "requer", so se o modulo entrou
+      const notas = (template.observacoes || [])
+        .filter((o) => !o.requer || marcados[o.requer])
+        .map((o) => o.texto);
+      const descricao = [template.descricao, ...notas].filter(Boolean).join(" ");
+
       const servico = {
-        titulo: template.nome,
+        titulo: tituloDoTemplate(template, marcados),
         prazo: `${prazo} dias úteis`,
         valor: "",
         parcelas: "50% no início e 50% na entrega",
-        descricao: template.descricao,
+        descricao,
         itens: escolhidos.map((m) => ({ rotulo: m.rotulo, conteudo: m.conteudo })),
       };
 
@@ -539,6 +597,26 @@
 
       const etapas = porEtapa.map((e) => ({ nome: e.nome, duracao: `${e.dias} dias úteis` }));
       return { servico, etapas, diasBrutos: dias, prazo };
+    }
+
+    // Junta o cronograma de um template novo ao que ja existe. Etapas de mesmo
+    // nome somam os dias em vez de duplicar a linha — o caso de empilhar dois
+    // templates que compartilham uma etapa (revisoes, por exemplo).
+    // Se a duracao ja tiver sido editada a mao e nao comecar com um numero,
+    // preserva o texto do usuario e acrescenta como linha separada.
+    function juntarCronograma(atual, novas) {
+      const saida = atual.map((e) => ({ ...e }));
+      novas.forEach((nova) => {
+        const existente = saida.find((e) => e.nome === nova.nome);
+        const diasExistente = parseInt(existente && existente.duracao, 10);
+        const diasNova = parseInt(nova.duracao, 10);
+        if (existente && Number.isFinite(diasExistente) && Number.isFinite(diasNova)) {
+          existente.duracao = `${diasExistente + diasNova} dias úteis`;
+        } else {
+          saida.push({ ...nova });
+        }
+      });
+      return saida;
     }
 
     function criarServicoVazio() {
@@ -593,7 +671,7 @@
         const servicoEmBranco = servicos.length === 1 && !servicos[0].titulo && !servicos[0].valor;
         setServicos(servicoEmBranco ? [servico] : [...servicos, servico]);
         const cronogramaEmBranco = cronograma.length === 1 && !cronograma[0].nome;
-        setCronograma(cronogramaEmBranco ? etapas : [...cronograma, ...etapas]);
+        setCronograma(cronogramaEmBranco ? etapas : juntarCronograma(cronograma, etapas));
       }
       function removerServico(idx) { setServicos(servicos.filter((_, i) => i !== idx)); }
       function atualizarEtapa(idx, campo, valor) {
@@ -1085,18 +1163,19 @@
                     <span className="template-modulo-dias">{m.dias}d</span>
                   </label>
                 ))}
-                <div className="template-modulo is-fixo">
-                  <span className="template-modulo-txt">
-                    <span className="template-modulo-rotulo">revisões</span>
-                    <span className="template-modulo-conteudo">2 rodadas de alterações, sempre incluídas</span>
-                  </span>
-                  <span className="template-modulo-dias">
-                    {template.etapasFixas.reduce((t, e) => t + e.dias, 0)}d
-                  </span>
-                </div>
+                {template.etapasFixas.map((e) => (
+                  <div key={e.nome} className="template-modulo is-fixo">
+                    <span className="template-modulo-txt">
+                      <span className="template-modulo-rotulo">{e.nome}</span>
+                      <span className="template-modulo-conteudo">sempre incluída</span>
+                    </span>
+                    <span className="template-modulo-dias">{e.dias}d</span>
+                  </div>
+                ))}
               </div>
 
               <div className="template-resumo">
+                <div className="template-variante">{previa.servico.titulo}</div>
                 <div className="template-prazo">
                   <span className="template-prazo-num">{previa.prazo}</span>
                   <span className="template-prazo-label">dias úteis</span>
@@ -1121,7 +1200,7 @@
 
                 <button className="btn-primario"
                         onClick={() => { onAplicar(previa.servico, previa.etapas); setAberto(null); }}>
-                  usar este template
+                  adicionar à proposta
                 </button>
               </div>
             </div>
