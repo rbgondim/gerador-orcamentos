@@ -146,7 +146,7 @@
     .doc-marca { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
     .doc-amp { width: 30px; height: 30px; flex: none; display: block; }
     .doc-logo { font-size: 30px; font-weight: 500; letter-spacing: -0.03em; line-height: 1; }
-    .doc-endereco, .doc-contato { font-size: 10px; color: var(--rp-gray); line-height: 1.7; margin-bottom: 8px; }
+    .doc-contato { font-size: 10px; color: var(--rp-gray); line-height: 1.7; margin-top: 14px; }
     .doc-proposta-box { text-align: right; }
     .doc-proposta-num { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--rp-gray); }
     .doc-proposta-num-big { font-size: 26px; font-weight: 500; margin-top: 4px; letter-spacing: -0.02em; }
@@ -211,9 +211,6 @@
     .doc-obs-bloco { margin-bottom: 18px; }
     .doc-obs-titulo { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 6px; font-weight: 500; color: var(--rp-white); }
     .doc-obs-txt { font-size: 10.5px; color: rgba(255,255,255,0.72); line-height: 1.55; margin: 0; }
-    .doc-rodape { margin-top: 50px; }
-    .doc-assinatura-linha { border-bottom: 1px solid var(--rp-white); height: 32px; margin-bottom: 6px; }
-    .doc-assinatura-label { font-size: 10px; color: var(--rp-gray); text-transform: uppercase; letter-spacing: 0.14em; }
 
     /* ===== Impressão ===== */
     @media print {
@@ -344,10 +341,8 @@
 
     const DADOS_FIXOS = {
       nome: "rodrigo gondim.",
-      endereco: "rua caraíbas, 1335",
-      cidade: "são paulo, sp",
       telefone: "+55 85 98615.1263",
-      email: "rodrigomiligrama@gmail.com",
+      email: "ola@rgondim.com.br",
     };
 
     // ===== Conteudo fixo da proposta =====
@@ -772,7 +767,6 @@
                 <Ampersand />
                 <span className="doc-logo">{DADOS_FIXOS.nome}</span>
               </div>
-              <div className="doc-endereco">{DADOS_FIXOS.endereco}<br />{DADOS_FIXOS.cidade}</div>
               <div className="doc-contato">T {DADOS_FIXOS.telefone}<br />{DADOS_FIXOS.email}</div>
             </div>
             <div className="doc-proposta-box">
@@ -897,10 +891,6 @@
             </div>
           </section>
 
-          <footer className="doc-rodape">
-            <div className="doc-assinatura-linha"></div>
-            <div className="doc-assinatura-label">assinatura contratante</div>
-          </footer>
         </div>
       );
     }
