@@ -223,8 +223,10 @@
     .doc-secao-label--pink   { color: var(--rp-pink); }
     .doc-secao-label--red    { color: var(--rp-red); }
 
-    .doc-cliente-nome { font-size: 30px; font-weight: 500; margin-bottom: 12px; letter-spacing: -0.03em; line-height: 1.05; }
-    .doc-apresentacao-txt { font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,0.85); margin: 0; max-width: 82%; }
+    .doc-proposta-para { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.25); display: flex; align-items: baseline; justify-content: flex-end; gap: 10px; }
+    .doc-proposta-para-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--rp-gray); }
+    .doc-proposta-para-nome { font-size: 17px; font-weight: 500; letter-spacing: -0.02em; }
+    .doc-apresentacao-txt { font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85); margin: 0; max-width: 82%; }
 
     /* Bloco fixo: apresentação, premiações e metodologia */
     .doc-manifesto { font-size: 12px; line-height: 1.6; color: rgba(255,255,255,0.85); max-width: 88%; margin: 0 0 32px 0; }
@@ -1126,14 +1128,22 @@
               <div className="doc-proposta-num">proposta</div>
               <div className="doc-proposta-num-big">nº {numeroFmt}</div>
               <div className="doc-proposta-data">{formatarData(data ? new Date(data) : new Date())}</div>
+              {cliente && (
+                <div className="doc-proposta-para">
+                  <span className="doc-proposta-para-label">para</span>
+                  <span className="doc-proposta-para-nome">{cliente}</span>
+                </div>
+              )}
             </div>
           </header>
 
-          <section className="doc-secao">
-            <div className="doc-secao-label doc-secao-label--green">apresentação</div>
-            <div className="doc-cliente-nome">{cliente || "—"}</div>
-            <p className="doc-apresentacao-txt">{apresentacao}</p>
-          </section>
+          {/* sem texto, o rotulo ficaria orfao sobre um vazio */}
+          {apresentacao && apresentacao.trim() && (
+            <section className="doc-secao">
+              <div className="doc-secao-label doc-secao-label--green">apresentação</div>
+              <p className="doc-apresentacao-txt">{apresentacao}</p>
+            </section>
+          )}
 
           <section className="doc-secao">
             <div className="doc-manifesto">
