@@ -130,21 +130,48 @@
     const { useState, useEffect } = React;
 
     // ===== Config Supabase =====
-    const SUPABASE_URL = "https://ldhvbytncnanmgdrystt.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkaHZieXRuY25hbm1nZHJ5c3R0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNDQ1NjIsImV4cCI6MjA5MjYyMDU2Mn0.EFFvrZIdPt-5bF4gRa-YZv4mQyL9wtkwFfuMDNVDA6c";
+    // Projeto provisionado pelo Vercel (Storage > Supabase).
+    // Os dois valores estao no painel do Vercel, em Storage > [o banco] > tab
+    // "Environment Variables": SUPABASE_URL e SUPABASE_PUBLISHABLE_KEY.
+    // Como este app e um HTML estatico sem build, as env vars do Vercel nao
+    // chegam sozinhas no navegador — os valores ficam colados aqui mesmo.
+    // Isso e seguro desde que a Row Level Security esteja ligada (ver supabase/schema.sql).
+    const SUPABASE_URL = "COLE_AQUI_A_SUPABASE_URL";
+    const SUPABASE_KEY = "COLE_AQUI_A_SUPABASE_PUBLISHABLE_KEY";
+
+    // Link do botao de erro. Depois de provisionar, troque pela URL do seu
+    // projeto (Vercel > Storage > [banco] > Open in Supabase).
+    const SUPABASE_PAINEL_URL = "https://vercel.com/dashboard/stores";
+
+    // Enquanto os valores acima forem os placeholders, nem tenta chamar a API:
+    // sem isso o fetch vira uma URL relativa e o app mostra um 404 sem sentido.
+    function supabaseConfigurado() {
+      return SUPABASE_URL.startsWith("https://") && !SUPABASE_KEY.startsWith("COLE_AQUI");
+    }
+
+    // As chaves novas do Supabase (sb_publishable_...) NAO sao JWT e devem ir
+    // apenas no header apikey. As antigas (anon, comecando com "eyJ") continuam
+    // precisando tambem do Authorization: Bearer. Esta funcao cobre os dois casos.
+    function cabecalhosSupabase(extra = {}) {
+      const ehJWT = SUPABASE_KEY.startsWith("eyJ");
+      return {
+        apikey: SUPABASE_KEY,
+        ...(ehJWT ? { Authorization: `Bearer ${SUPABASE_KEY}` } : {}),
+        "Content-Type": "application/json",
+        ...extra,
+      };
+    }
 
     async function sb(path, options = {}) {
+      if (!supabaseConfigurado()) throw new Error("NAO_CONFIGURADO");
       let res;
       try {
         res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
           ...options,
-          headers: {
-            apikey: SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-            "Content-Type": "application/json",
+          headers: cabecalhosSupabase({
             Prefer: "return=representation",
             ...(options.headers || {}),
-          },
+          }),
         });
       } catch (e) {
         throw new Error("CONEXAO_FALHOU");
@@ -158,15 +185,12 @@
     }
 
     async function obterProximoNumero() {
+      if (!supabaseConfigurado()) throw new Error("NAO_CONFIGURADO");
       let res;
       try {
         res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/obter_proximo_numero_proposta`, {
           method: "POST",
-          headers: {
-            apikey: SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-            "Content-Type": "application/json",
-          },
+          headers: cabecalhosSupabase(),
           body: "{}",
         });
       } catch (e) { throw new Error("CONEXAO_FALHOU"); }
@@ -648,14 +672,18 @@
 
     function AvisoErro({ erro, onFechar }) {
       let titulo, corpo, url;
-      if (erro === "ALLOWLIST") {
+      if (erro === "NAO_CONFIGURADO") {
+        titulo = "Banco ainda não configurado";
+        corpo = "Preencha SUPABASE_URL e SUPABASE_KEY no topo do index.html com os valores do banco provisionado no Vercel (Storage → o banco → Environment Variables), e rode supabase/schema.sql no SQL Editor.";
+        url = SUPABASE_PAINEL_URL;
+      } else if (erro === "ALLOWLIST") {
         titulo = "Acesso bloqueado pela allowlist do Supabase";
         corpo = "Seu projeto Supabase está com restrição de rede ativa. Acesse Settings → Network Restrictions no painel e libere o acesso.";
-        url = "https://supabase.com/dashboard/project/ldhvbytncnanmgdrystt/settings/database";
+        url = SUPABASE_PAINEL_URL;
       } else if (erro === "CONEXAO_FALHOU") {
         titulo = "Falha ao conectar com o Supabase";
         corpo = "Não foi possível se comunicar com o banco. Verifique sua conexão de internet ou se o projeto está pausado.";
-        url = "https://supabase.com/dashboard/project/ldhvbytncnanmgdrystt";
+        url = SUPABASE_PAINEL_URL;
       } else {
         titulo = "Erro";
         corpo = erro;
