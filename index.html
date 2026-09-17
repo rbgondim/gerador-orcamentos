@@ -110,6 +110,29 @@
     .btn-link { border: none; background: none; color: var(--rp-gray); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
     .btn-link:hover { color: var(--rp-white); opacity: 1; }
 
+    /* ---- Histórico, edição e link ---- */
+    .container-doc { padding-top: 0; padding-bottom: 56px; }
+    .historico-acoes { display: flex; gap: 14px; justify-content: flex-end; white-space: nowrap; }
+    .btn-linha { border: none; background: none; color: var(--rp-gray); font-size: 12.5px; text-decoration: underline; text-underline-offset: 3px; padding: 0; }
+    .btn-linha:hover { color: var(--rp-white); opacity: 1; }
+
+    .faixa-edicao { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding: 14px 18px; margin-bottom: 28px; border: 1px solid var(--rp-yellow); border-radius: var(--rp-radius); background: rgba(255,191,1,0.07); font-size: 13px; color: var(--rp-yellow); }
+    .faixa-edicao strong { font-weight: 500; }
+    .faixa-edicao .btn-linha { color: var(--rp-yellow); }
+    .faixa-edicao .btn-linha:hover { color: var(--rp-white); }
+
+    .pronta-dica { font-size: 14px; color: var(--rp-gray); margin-top: 12px; line-height: 1.6; }
+    .pronta-dica code { font-size: 12px; background: rgba(255,255,255,0.08); padding: 3px 9px; border-radius: 6px; }
+    .pronta-acoes { display: flex; gap: 12px; margin-top: 28px; justify-content: center; }
+
+    .link-box { margin: 32px auto 0; max-width: 560px; text-align: left; padding-top: 24px; border-top: 1px solid var(--linha); }
+    .link-box-label { font-size: 11px; color: var(--rp-gray); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 10px; }
+    .link-box-linha { display: flex; gap: 10px; }
+    .link-box-linha input { font-size: 13px; }
+    .link-box-obs { font-size: 12px; color: var(--rp-gray); margin: 10px 0 0 0; line-height: 1.5; }
+
+    .barra-compartilhada { display: flex; justify-content: flex-end; padding-top: 28px; padding-bottom: 20px; }
+
     /* ---- Templates de projeto ---- */
     .templates { margin-bottom: 42px; }
     .templates-linha { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -637,6 +660,9 @@
       const [gerando, setGerando] = useState(false);
       const [erro, setErro] = useState(null);
       const [propostaFinal, setPropostaFinal] = useState(null);
+      // null = proposta nova. Preenchido = reabrindo uma do historico para
+      // editar, mantendo id, numero e data originais.
+      const [editando, setEditando] = useState(null);
 
       useEffect(() => {
         sb("proposta_contador?select=proximo_numero&id=eq.1")
@@ -694,23 +720,53 @@
         setGerando(true);
         setErro(null);
         try {
-          const numero = await obterProximoNumero();
-          const ano = new Date().getFullYear();
-          const numeroFmt = numeroProposta(numero, ano);
           const valorTotal = servicos.reduce((s, sv) => s + (parseFloat(sv.valor) || 0), 0);
+          const campos = {
+            cliente: cliente || "sem nome", apresentacao, servicos, cronograma,
+            validade_dias: validadeDias, valor_total: valorTotal,
+          };
 
-          await sb("propostas_geradas", {
-            method: "POST",
-            body: JSON.stringify({
-              numero_proposta: numeroFmt, ano, cliente: cliente || "sem nome",
-              apresentacao, servicos, cronograma, validade_dias: validadeDias, valor_total: valorTotal,
-            }),
+          let linha, numeroFmt;
+          if (editando) {
+            // regrava a mesma linha: o numero ja foi para o cliente, nao muda
+            numeroFmt = editando.numero_proposta;
+            const resp = await sb(`propostas_geradas?id=eq.${editando.id}`, {
+              method: "PATCH", body: JSON.stringify(campos),
+            });
+            linha = Array.isArray(resp) ? resp[0] : resp;
+          } else {
+            const numero = await obterProximoNumero();
+            const ano = new Date().getFullYear();
+            numeroFmt = numeroProposta(numero, ano);
+            const resp = await sb("propostas_geradas", {
+              method: "POST",
+              body: JSON.stringify({ numero_proposta: numeroFmt, ano, ...campos }),
+            });
+            linha = Array.isArray(resp) ? resp[0] : resp;
+            setProximoNum(numero + 1);
+          }
+
+          setPropostaFinal({
+            id: linha && linha.id, numeroFmt, cliente, apresentacao, servicos,
+            cronograma, validadeDias, data: linha && linha.criado_em,
           });
-
-          setProximoNum(numero + 1);
-          setPropostaFinal({ numeroFmt, cliente, apresentacao, servicos, cronograma, validadeDias });
+          setEditando(null);
           setTela("pronto");
         } catch (e) { setErro(e.message); } finally { setGerando(false); }
+      }
+
+      function carregarDoHistorico(p, modo) {
+        setCliente(modo === "duplicar" ? "" : (p.cliente || ""));
+        setApresentacao(p.apresentacao || "");
+        setValidadeDias(p.validade_dias || 30);
+        setServicos(p.servicos && p.servicos.length ? p.servicos : [criarServicoVazio()]);
+        setCronograma(p.cronograma && p.cronograma.length ? p.cronograma : [criarEtapaVazia()]);
+        // duplicar = proposta nova, ganha numero novo ao salvar
+        setEditando(modo === "editar"
+          ? { id: p.id, numero_proposta: p.numero_proposta, ano: p.ano }
+          : null);
+        setErro(null);
+        setTela("form");
       }
 
       function temDadosPreenchidos() {
@@ -757,7 +813,7 @@
         ]);
       }
 
-      if (tela === "historico") return <TelaHistorico historico={historico} onVoltar={() => setTela("form")} />;
+      if (tela === "historico") return <TelaHistorico historico={historico} onVoltar={() => setTela("form")} onCarregar={carregarDoHistorico} />;
 
       if (tela === "pronto") {
         return <TelaPronta proposta={propostaFinal} onNova={() => {
@@ -770,20 +826,30 @@
 
       if (tela === "preview") {
         return (
-          <div className="container" style={{paddingTop: 20}}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20, gap: 12 }}>
-              <button className="btn-secundario" onClick={() => setTela("form")}>← voltar e editar</button>
-              <button className="btn-primario" onClick={confirmarEsalvar} disabled={gerando} style={{opacity: gerando ? 0.5 : 1}}>
-                ⬇ {gerando ? "salvando..." : `confirmar ${numeroProposta(proximoNum, new Date().getFullYear())}`}
-              </button>
+          <div>
+            <div className="container no-print" style={{ paddingTop: 20, paddingBottom: 0 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20, gap: 12 }}>
+                <button className="btn-secundario" onClick={() => setTela("form")}>← voltar e editar</button>
+                <button className="btn-primario" onClick={confirmarEsalvar} disabled={gerando} style={{ opacity: gerando ? 0.5 : 1 }}>
+                  ⬇ {gerando ? "salvando..." : (editando
+                       ? `regravar ${editando.numero_proposta}`
+                       : `confirmar ${numeroProposta(proximoNum, new Date().getFullYear())}`)}
+                </button>
+              </div>
+              {erro && <AvisoErro erro={erro} onFechar={() => setErro(null)} />}
             </div>
-            {erro && <AvisoErro erro={erro} onFechar={() => setErro(null)} />}
-            <div className="preview-box">
-              <PropostaRender
-                numeroFmt={numeroProposta(proximoNum || 12, new Date().getFullYear())}
-                cliente={cliente} apresentacao={apresentacao}
-                servicos={servicos} cronograma={cronograma} validadeDias={validadeDias}
-              />
+
+            {/* mesmo motivo da TelaPronta: o documento precisa ficar fora de
+                qualquer ancestral .no-print, senao o print sai em branco */}
+            <div className="container container-doc">
+              <div className="preview-box">
+                <div id="area-impressao">
+                  <PropostaRender
+                    numeroFmt={editando ? editando.numero_proposta : numeroProposta(proximoNum, new Date().getFullYear())}
+                    cliente={cliente} apresentacao={apresentacao} servicos={servicos}
+                    cronograma={cronograma} validadeDias={validadeDias} />
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -824,6 +890,18 @@
             <label>validade (dias)</label>
             <input type="number" style={{width: 140}} value={validadeDias} onChange={(e) => setValidadeDias(parseInt(e.target.value) || 30)} />
           </section>
+
+          {editando && (
+            <div className="faixa-edicao">
+              <span>
+                editando a proposta <strong>{editando.numero_proposta}</strong> — regravar mantém
+                o número e a data originais
+              </span>
+              <button className="btn-linha" onClick={() => setEditando(null)}>
+                salvar como proposta nova
+              </button>
+            </div>
+          )}
 
           <PainelTemplates onAplicar={aplicarTemplate} />
 
@@ -906,38 +984,44 @@
 
     function TelaPronta({ proposta, onNova }) {
       // Padronizar nome do arquivo: 0012_2026_NomeDoCliente
-      // numeroFmt vem no formato "0012/2026" — separamos o número e o ano
       const [numero, ano] = proposta.numeroFmt.split("/");
       const nomeCliente = (proposta.cliente || "sem-nome")
         .trim()
-        .replace(/\s+/g, "_")         // espaços viram _
-        .replace(/[\/\\:*?"<>|]/g, ""); // remove caracteres proibidos em nomes de arquivo
+        .replace(/\s+/g, "_")
+        .replace(/[\/\\:*?"<>|]/g, "");
       const nomeArquivo = `${numero}_${ano}_${nomeCliente}`;
 
-      // Muda o título da aba (navegador usa isso como sugestão de nome ao salvar PDF)
+      // O navegador usa o title da aba como sugestao de nome ao salvar o PDF
       useEffect(() => {
         const tituloOriginal = document.title;
         document.title = nomeArquivo;
         return () => { document.title = tituloOriginal; };
       }, [nomeArquivo]);
 
-      function imprimir() { window.print(); }
       return (
         <div>
           <div className="container no-print">
             <div className="proposta-pronta-box">
               <div className="selo">✓</div>
-              <h1 style={{fontSize: 32}}>Proposta {proposta.numeroFmt} salva</h1>
-              <p style={{fontSize: 14, color: "#666", fontStyle: "italic", marginTop: 12}}>
-                Para gerar o PDF, clique em imprimir e escolha "Salvar como PDF" no diálogo.<br />
-                O nome sugerido será: <code style={{fontSize: 12, background: "rgba(255,255,255,0.08)", padding: "3px 9px", borderRadius: 6}}>{nomeArquivo}.pdf</code>
+              <h1 style={{ fontSize: 32 }}>Proposta {proposta.numeroFmt} salva</h1>
+              <p className="pronta-dica">
+                Para gerar o PDF, clique em imprimir e escolha “Salvar como PDF”.
+                O nome sugerido será <code>{nomeArquivo}.pdf</code>.
               </p>
-              <div style={{ display: "flex", gap: 12, marginTop: 28, justifyContent: "center" }}>
-                <button className="btn-primario" onClick={imprimir}>⎙ imprimir / salvar PDF</button>
+              <div className="pronta-acoes">
+                <button className="btn-primario" onClick={() => window.print()}>⎙ imprimir / salvar PDF</button>
                 <button className="btn-secundario" onClick={onNova}>nova proposta</button>
               </div>
+              {proposta.id && <LinkCompartilhavel id={proposta.id} />}
             </div>
-            <div className="preview-box" style={{marginTop: 40}}>
+          </div>
+
+          {/* Fica FORA do .container.no-print de proposito. No @media print o
+              .no-print vira display:none, e display:none no ancestral apaga a
+              subarvore inteira — visibility:visible no filho nao ressuscita.
+              Era esse o motivo do PDF sair em branco. */}
+          <div className="container container-doc">
+            <div className="preview-box">
               <div id="area-impressao">
                 <PropostaRender {...proposta} />
               </div>
@@ -947,7 +1031,44 @@
       );
     }
 
-    function TelaHistorico({ historico, onVoltar }) {
+    function urlDaProposta(id) {
+      return `${location.origin}${location.pathname}?p=${id}`;
+    }
+
+    function LinkCompartilhavel({ id, compacto }) {
+      const [copiado, setCopiado] = useState(false);
+      const url = urlDaProposta(id);
+
+      async function copiar() {
+        try {
+          await navigator.clipboard.writeText(url);
+        } catch (e) {
+          // clipboard bloqueado (http sem localhost, permissao negada): cai no prompt
+          window.prompt("Copie o link:", url);
+          return;
+        }
+        setCopiado(true);
+        setTimeout(() => setCopiado(false), 2000);
+      }
+
+      if (compacto) {
+        return <button className="btn-linha" onClick={copiar}>{copiado ? "copiado ✓" : "link"}</button>;
+      }
+      return (
+        <div className="link-box">
+          <div className="link-box-label">link para o cliente</div>
+          <div className="link-box-linha">
+            <input readOnly value={url} onFocus={(e) => e.target.select()} />
+            <button className="btn-secundario" onClick={copiar}>{copiado ? "copiado ✓" : "copiar"}</button>
+          </div>
+          <p className="link-box-obs">
+            Abre só a proposta, sem o gerador. Quem tiver o link vê o documento.
+          </p>
+        </div>
+      );
+    }
+
+    function TelaHistorico({ historico, onVoltar, onCarregar }) {
       return (
         <div className="container">
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 32, alignItems: "baseline" }}>
@@ -955,20 +1076,25 @@
             <button className="btn-secundario" onClick={onVoltar}>← voltar</button>
           </div>
           {historico.length === 0 ? (
-            <p style={{ color: "#999", fontStyle: "italic" }}>Nenhuma proposta gerada ainda.</p>
+            <p style={{ color: "var(--rp-gray)" }}>Nenhuma proposta gerada ainda.</p>
           ) : (
             <table>
               <thead>
-                <tr><th>nº</th><th>cliente</th><th>valor</th><th>data</th></tr>
+                <tr><th>nº</th><th>cliente</th><th>valor</th><th>data</th><th></th></tr>
               </thead>
               <tbody>
                 {historico.map((p) => (
                   <tr key={p.id}>
-                    <td><code style={{fontSize: 13, letterSpacing: "0.04em"}}>{p.numero_proposta}</code></td>
-                    <td style={{fontStyle: "italic"}}>{p.cliente}</td>
-                    <td style={{fontSize: 14, fontWeight: 500}}>{formatarValor(p.valor_total)}</td>
-                    <td style={{color: "var(--rp-gray)", fontSize: 13}}>
+                    <td><code style={{ fontSize: 13, letterSpacing: "0.04em" }}>{p.numero_proposta}</code></td>
+                    <td>{p.cliente}</td>
+                    <td style={{ fontSize: 14, fontWeight: 500 }}>{formatarValor(p.valor_total)}</td>
+                    <td style={{ color: "var(--rp-gray)", fontSize: 13 }}>
                       {new Date(p.criado_em).toLocaleDateString("pt-BR")}
+                    </td>
+                    <td className="historico-acoes">
+                      <button className="btn-linha" onClick={() => onCarregar(p, "editar")}>editar</button>
+                      <button className="btn-linha" onClick={() => onCarregar(p, "duplicar")}>usar de base</button>
+                      <LinkCompartilhavel id={p.id} compacto />
                     </td>
                   </tr>
                 ))}
@@ -979,7 +1105,10 @@
       );
     }
 
-    function PropostaRender({ numeroFmt, cliente, apresentacao, servicos, cronograma, validadeDias }) {
+    function PropostaRender({ numeroFmt, cliente, apresentacao, servicos, cronograma, validadeDias, data }) {
+      // "data" so vem em proposta salva/reaberta. Sem ela (preview de proposta
+      // nova) cai em hoje. Sem isso uma proposta antiga reaberta — ou aberta
+      // pelo link — mostraria a data de hoje no cabecalho.
       return (
         <div className="pagina">
           <header className="doc-cabecalho">
@@ -993,7 +1122,7 @@
             <div className="doc-proposta-box">
               <div className="doc-proposta-num">proposta</div>
               <div className="doc-proposta-num-big">nº {numeroFmt}</div>
-              <div className="doc-proposta-data">{formatarData()}</div>
+              <div className="doc-proposta-data">{formatarData(data ? new Date(data) : new Date())}</div>
             </div>
           </header>
 
@@ -1239,8 +1368,57 @@
       );
     }
 
+    // Visao publica: ?p=<id> mostra so a proposta, sem o gerador.
+    function TelaCompartilhada({ id }) {
+      const [proposta, setProposta] = useState(null);
+      const [erro, setErro] = useState(null);
+
+      useEffect(() => {
+        sb(`propostas_geradas?select=*&id=eq.${encodeURIComponent(id)}`)
+          .then((linhas) => {
+            if (!linhas.length) { setErro("NAO_ENCONTRADA"); return; }
+            const p = linhas[0];
+            setProposta({
+              id: p.id, numeroFmt: p.numero_proposta, cliente: p.cliente,
+              apresentacao: p.apresentacao, servicos: p.servicos || [],
+              cronograma: p.cronograma || [], validadeDias: p.validade_dias,
+              data: p.criado_em,
+            });
+            document.title = `Proposta ${p.numero_proposta} · ${p.cliente}`;
+          })
+          .catch((e) => setErro(e.message));
+      }, [id]);
+
+      if (erro === "NAO_ENCONTRADA") {
+        return <div className="container"><h1>Proposta não encontrada</h1>
+          <p style={{ color: "var(--rp-gray)" }}>O link pode estar incompleto ou a proposta foi removida.</p></div>;
+      }
+      if (erro) return <div className="container"><AvisoErro erro={erro} onFechar={() => setErro(null)} /></div>;
+      if (!proposta) return <div className="container"><p style={{ color: "var(--rp-gray)" }}>carregando…</p></div>;
+
+      return (
+        <div>
+          <div className="container no-print barra-compartilhada">
+            <button className="btn-secundario" onClick={() => window.print()}>⎙ salvar em PDF</button>
+          </div>
+          <div className="container container-doc">
+            <div className="preview-box">
+              <div id="area-impressao">
+                <PropostaRender {...proposta} />
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function Raiz() {
+      const id = new URLSearchParams(location.search).get("p");
+      return id ? <TelaCompartilhada id={id} /> : <App />;
+    }
+
     const root = ReactDOM.createRoot(document.getElementById("root"));
-    root.render(<App />);
+    root.render(<Raiz />);
   </script>
 </body>
 </html>

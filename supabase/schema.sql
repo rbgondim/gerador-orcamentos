@@ -82,6 +82,7 @@ alter table public.proposta_contador  enable row level security;
 
 drop policy if exists "anon le propostas"      on public.propostas_geradas;
 drop policy if exists "anon insere propostas"  on public.propostas_geradas;
+drop policy if exists "anon edita propostas"   on public.propostas_geradas;
 drop policy if exists "anon le contador"       on public.proposta_contador;
 
 create policy "anon le propostas"
@@ -94,12 +95,23 @@ create policy "anon insere propostas"
   to anon, authenticated
   with check (true);
 
+-- Necessario para reabrir uma proposta do historico e regravar a mesma linha,
+-- mantendo numero e data. ATENCAO: como a publishable key e publica, isso
+-- significa que qualquer pessoa com a key pode reescrever qualquer proposta.
+-- A protecao de verdade aqui seria autenticacao (Supabase Auth); enquanto nao
+-- houver, o update fica aberto igual ao select e ao insert.
+create policy "anon edita propostas"
+  on public.propostas_geradas for update
+  to anon, authenticated
+  using (true)
+  with check (true);
+
 create policy "anon le contador"
   on public.proposta_contador for select
   to anon, authenticated
   using (true);
 
--- Sem policy de update/delete: ninguém apaga nem edita proposta pela API pública.
+-- Sem policy de delete: ninguém apaga proposta pela API pública.
 
 -- ---------------------------------------------------------------------------
 -- 4. Grants
@@ -108,11 +120,11 @@ create policy "anon le contador"
 
 grant usage on schema public to anon, authenticated;
 
-grant select, insert on public.propostas_geradas to anon, authenticated;
+grant select, insert, update on public.propostas_geradas to anon, authenticated;
 grant select          on public.proposta_contador to anon, authenticated;
 
 grant execute on function public.obter_proximo_numero_proposta() to anon, authenticated;
 
 -- Garante que o anon NÃO mexe no contador por fora da RPC.
 revoke insert, update, delete on public.proposta_contador from anon, authenticated;
-revoke update, delete         on public.propostas_geradas  from anon, authenticated;
+revoke delete                 on public.propostas_geradas  from anon, authenticated;
