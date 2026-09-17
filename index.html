@@ -168,8 +168,10 @@
     .doc-manifesto { font-size: 12px; line-height: 1.6; color: rgba(255,255,255,0.85); max-width: 88%; margin: 0 0 32px 0; }
     .doc-manifesto p { margin: 0 0 10px 0; }
     .doc-manifesto p:last-child { margin-bottom: 0; }
-    .doc-premiacoes { columns: 2; column-gap: 34px; font-size: 11px; line-height: 1.75; color: rgba(255,255,255,0.85); margin-bottom: 36px; }
-    .doc-premiacao { break-inside: avoid; }
+    .doc-premiacoes { columns: 2; column-gap: 34px; font-size: 11px; margin-bottom: 36px; }
+    .doc-premiacao { break-inside: avoid; margin-bottom: 9px; }
+    .doc-premiacao-titulo { display: block; font-weight: 500; color: var(--rp-white); line-height: 1.35; }
+    .doc-premiacao-detalhe { display: block; font-size: 10px; color: var(--rp-gray); line-height: 1.35; }
     .doc-metodologia { break-inside: avoid; page-break-inside: avoid; }
     .doc-metodo-grade { margin-bottom: 26px; }
     .doc-metodo-linha { display: grid; grid-template-columns: 124px 1fr; align-items: center; gap: 16px; margin-bottom: 10px; }
@@ -363,15 +365,23 @@
       "criativa e, mais recentemente, modelagem e animação 3D.",
     ];
 
+    // Lista de premios da pagina About do rgondim.com.br (set/2026).
+    // Os termos genericos vao em PT porque a proposta e em PT; nomes
+    // proprios (D&AD, Wood Pencil, Bienal ADG, iF Awards) ficam como sao.
     const PREMIACOES = [
-      "Bienal Iberoamericana de Diseño – Madrid (2020)",
-      "Brasil Design Awards (2018–2019–2020–2021)",
-      "Bienal Brasileira de Design Gráfico – ADG (2017–2019)",
-      "Finalista no Latin America Design Award (2018)",
-      "Bienal Brasileira de Design (2015)",
-      "Prêmio Bornancini de Design (2020)",
-      "Prêmio Profissionais do Ano (Rede Globo – 2017)",
-      "Melhor Comercial Regional do Brasil (SBT – 2017)",
+      { titulo: "D&AD",                     detalhe: "Wood Pencil · Natura Naturé" },
+      { titulo: "Brasil Design Awards 2025", detalhe: "1 prata, 1 bronze" },
+      { titulo: "14ª Bienal ADG",           detalhe: "6 trabalhos selecionados · destaque para Natura Naturé" },
+      { titulo: "iF Awards 2024",           detalhe: "Bauducco One Brand" },
+      { titulo: "Brasil Design Awards 2024", detalhe: "2 ouro, 2 prata" },
+      { titulo: "Brasil Design Awards 2023", detalhe: "1 prata, 2 bronze" },
+      { titulo: "Prêmio Bornancini 2020",   detalhe: "2 ouro, 1 prata" },
+      { titulo: "Brasil Design Awards 2021", detalhe: "1 bronze" },
+      { titulo: "Brasil Design Awards 2020", detalhe: "1 bronze" },
+      { titulo: "13ª Bienal ADG",           detalhe: "3 trabalhos selecionados · destaque para Tipo Café" },
+      { titulo: "Brasil Design Awards 2019", detalhe: "3 bronze" },
+      { titulo: "Brasil Design Awards 2018", detalhe: "5 bronze" },
+      { titulo: "12ª Bienal ADG",           detalhe: "3 trabalhos selecionados" },
     ];
 
     // "passos" sao as posicoes preenchidas na trilha de 10 marcos do diagrama.
@@ -790,7 +800,10 @@
             <div className="doc-secao-label doc-secao-label--blue">principais premiações</div>
             <div className="doc-premiacoes">
               {PREMIACOES.map((premio, i) => (
-                <div key={i} className="doc-premiacao">{premio}</div>
+                <div key={i} className="doc-premiacao">
+                  <span className="doc-premiacao-titulo">{premio.titulo}</span>
+                  <span className="doc-premiacao-detalhe">{premio.detalhe}</span>
+                </div>
               ))}
             </div>
 
