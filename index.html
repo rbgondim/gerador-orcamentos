@@ -4,130 +4,196 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gerador de Orçamentos · miligrama design</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
+    /* ===================================================================
+       Sistema visual do rgondim.com.br (tema rodrigo-portfolio-theme).
+       Fontes, cores, raio e unidade de espaçamento vêm de lá.
+       A INTERFACE é preta como o site. O DOCUMENTO da proposta segue
+       branco — é papel, vai impresso e em PDF para o cliente.
+       =================================================================== */
+
+    @font-face { font-family: 'National 2'; src: url('assets/fonts/National2-Light.otf') format('opentype'); font-weight: 300; font-display: swap; }
+    @font-face { font-family: 'National 2'; src: url('assets/fonts/National2-Regular.otf') format('opentype'); font-weight: 400; font-display: swap; }
+    @font-face { font-family: 'National 2'; src: url('assets/fonts/National2-Medium.otf') format('opentype'); font-weight: 500; font-display: swap; }
+    @font-face { font-family: 'National 2'; src: url('assets/fonts/National2-Bold.otf') format('opentype'); font-weight: 700; font-display: swap; }
+
+    :root {
+      --rp-black: #000000;
+      --rp-white: #ffffff;
+      --rp-gray: #909090;
+      --rp-blue: #004bf4;
+      --rp-yellow: #ffbf01;
+      --rp-red: #ff0700;
+      --rp-green: #008858;
+      --rp-pink: #f184d4;
+
+      --rp-font: 'National 2', 'Helvetica Neue', Arial, sans-serif;
+      --rp-radius: 20px;
+      --rp-gap: 14px;
+
+      --linha: rgba(255, 255, 255, 0.22);
+      --campo: rgba(255, 255, 255, 0.04);
+    }
+
     * { box-sizing: border-box; }
-    body { margin: 0; background: #f5f3ef; font-family: 'EB Garamond', Georgia, serif; color: #1a1a1a; }
+
+    body {
+      margin: 0;
+      background: var(--rp-black);
+      color: var(--rp-white);
+      font-family: var(--rp-font);
+      /* a National 2 pesa visivelmente sem isto no macOS/Chrome */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
     input, textarea, button { font-family: inherit; }
-    input:focus, textarea:focus { border-color: #1a1a1a !important; background: #fff !important; outline: none; }
-    button { cursor: pointer; }
-    button:hover { opacity: 0.85; }
+    button { cursor: pointer; transition: opacity 0.15s, background 0.15s, color 0.15s, border-color 0.15s; }
+    button:hover { opacity: 0.75; }
 
-    .container { max-width: 900px; margin: 0 auto; padding: 48px 40px; min-height: 100vh; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 56px 28px 0; min-height: 100vh; }
 
-    .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 44px; padding-bottom: 24px; border-bottom: 1px solid #1a1a1a; }
-    h1 { font-size: 40px; font-weight: 400; font-style: italic; margin: 0; letter-spacing: -0.8px; line-height: 1; }
-    .subtitulo { font-size: 11px; color: #888; margin: 8px 0 0 0; text-transform: uppercase; letter-spacing: 2.5px; font-family: 'JetBrains Mono', monospace; }
-    h2 { font-size: 26px; font-style: italic; font-weight: 400; margin: 0; letter-spacing: -0.3px; }
+    /* ---- Cabeçalho ---- */
+    .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 56px; padding-bottom: 28px; border-bottom: 1px solid var(--linha); }
+    h1 { font-size: 44px; font-weight: 500; margin: 0; letter-spacing: -0.02em; line-height: 1; }
+    .subtitulo { font-size: 12px; color: var(--rp-green); margin: 10px 0 0 0; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 400; }
+    h2 { font-size: 28px; font-weight: 500; margin: 0; letter-spacing: -0.02em; }
 
-    .header-right { display: flex; gap: 16px; align-items: flex-end; }
-    .contador-box { display: flex; flex-direction: column; align-items: flex-end; padding-right: 20px; border-right: 1px solid #ccc; }
-    .contador-label { font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: 2px; font-family: 'JetBrains Mono', monospace; margin-bottom: 2px; }
-    .contador-num { font-size: 20px; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+    .header-right { display: flex; gap: 20px; align-items: flex-end; }
+    .contador-box { display: flex; flex-direction: column; align-items: flex-end; padding-right: 20px; border-right: 1px solid var(--linha); }
+    .contador-label { font-size: 11px; color: var(--rp-gray); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 4px; }
+    .contador-num { font-size: 22px; font-weight: 500; letter-spacing: -0.01em; }
 
-    .secao { margin-bottom: 48px; }
-    .secao-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 24px; padding-bottom: 10px; border-bottom: 1px solid #1a1a1a; }
+    /* ---- Seções e campos ---- */
+    .secao { margin-bottom: 56px; }
+    .secao-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 28px; padding-bottom: 14px; border-bottom: 1px solid var(--linha); }
 
-    label { display: block; font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1.8px; margin-bottom: 8px; margin-top: 16px; font-family: 'JetBrains Mono', monospace; }
-    input, textarea { width: 100%; padding: 11px 14px; border: 1px solid #d0ccc3; border-radius: 0; font-size: 15px; background: #fafaf7; color: #1a1a1a; transition: all 0.15s; }
-    textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+    label { display: block; font-size: 11px; color: var(--rp-gray); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 8px; margin-top: 18px; }
+    input, textarea {
+      width: 100%; padding: 13px 16px;
+      border: 1px solid var(--linha); border-radius: 10px;
+      font-size: 15px; background: var(--campo); color: var(--rp-white);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    input::placeholder, textarea::placeholder { color: rgba(255, 255, 255, 0.3); }
+    input:focus, textarea:focus { border-color: var(--rp-white) !important; background: rgba(255, 255, 255, 0.07) !important; outline: none; }
+    textarea { resize: vertical; min-height: 68px; line-height: 1.5; }
 
-    .cartao { padding: 28px; border: 1px solid #d0ccc3; margin-bottom: 18px; background: #fff; position: relative; }
+    .cartao { padding: 28px; border: 1px solid var(--linha); border-radius: var(--rp-radius); margin-bottom: var(--rp-gap); background: rgba(255, 255, 255, 0.03); position: relative; }
     .cartao-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
-    .cartao-num { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #999; letter-spacing: 2px; }
+    .cartao-num { font-size: 12px; color: var(--rp-gray); letter-spacing: 0.14em; }
 
-    .linha-campos { display: flex; gap: 18px; margin-bottom: 4px; }
+    .linha-campos { display: flex; gap: var(--rp-gap); margin-bottom: 4px; }
     .linha-campos > div { flex: 1; }
     .linha-campos > .flex2 { flex: 2; }
     .linha-item { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
 
-    .btn-add { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1px solid #1a1a1a; background: #fff; color: #1a1a1a; font-size: 11px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1.2px; }
-    .btn-add-inline { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border: 1px dashed #aaa; background: transparent; color: #666; font-size: 10px; font-family: 'JetBrains Mono', monospace; }
-    .btn-remover { border: none; background: transparent; color: #999; padding: 4px; }
-    .btn-remover-icon { border: none; background: transparent; color: #ccc; padding: 6px; font-size: 14px; }
-    .btn-secundario { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border: 1px solid #d0ccc3; background: #fff; color: #666; font-size: 11px; font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
-    .btn-primario { display: inline-flex; align-items: center; gap: 8px; padding: 13px 26px; border: none; background: #1a1a1a; color: #fff; font-size: 12px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1.5px; }
-    .btn-preview { display: inline-flex; align-items: center; gap: 8px; padding: 15px 32px; border: 1px solid #1a1a1a; background: #1a1a1a; color: #fff; font-size: 12px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1.5px; }
-    .btn-link { border: none; background: none; color: #888; font-size: 11px; font-family: 'JetBrains Mono', monospace; text-decoration: underline; letter-spacing: 0.5px; }
+    /* ---- Botões (pílula, como os filtros da Work) ---- */
+    .btn-add, .btn-secundario, .btn-primario, .btn-preview, .btn-add-inline {
+      display: inline-flex; align-items: center; gap: 8px;
+      border-radius: 999px; letter-spacing: 0.02em; font-weight: 400;
+    }
+    .btn-add { padding: 9px 18px; border: 1px solid var(--linha); background: transparent; color: var(--rp-white); font-size: 13px; }
+    .btn-add:hover { border-color: var(--rp-white); opacity: 1; }
+    .btn-add-inline { padding: 6px 14px; border: 1px dashed rgba(255, 255, 255, 0.3); background: transparent; color: var(--rp-gray); font-size: 12px; }
+    .btn-add-inline:hover { color: var(--rp-white); opacity: 1; }
+    .btn-remover { border: none; background: transparent; color: var(--rp-gray); padding: 4px; font-size: 13px; }
+    .btn-remover:hover { color: var(--rp-red); opacity: 1; }
+    .btn-remover-icon { border: none; background: transparent; color: rgba(255, 255, 255, 0.35); padding: 6px; font-size: 15px; }
+    .btn-remover-icon:hover { color: var(--rp-red); opacity: 1; }
+    .btn-secundario { padding: 10px 20px; border: 1px solid var(--linha); background: transparent; color: var(--rp-white); font-size: 13px; }
+    .btn-secundario:hover { border-color: var(--rp-white); opacity: 1; }
+    .btn-primario { padding: 14px 30px; border: 1px solid var(--rp-white); background: var(--rp-white); color: var(--rp-black); font-size: 14px; font-weight: 500; }
+    .btn-preview { padding: 16px 36px; border: 1px solid var(--rp-white); background: var(--rp-white); color: var(--rp-black); font-size: 14px; font-weight: 500; }
+    .btn-primario:hover, .btn-preview:hover { background: transparent; color: var(--rp-white); opacity: 1; }
+    .btn-link { border: none; background: none; color: var(--rp-gray); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+    .btn-link:hover { color: var(--rp-white); opacity: 1; }
 
-    .rodape-acoes { display: flex; justify-content: flex-end; padding: 28px 0; border-top: 1px solid #1a1a1a; margin-top: 48px; }
-    .seletor-exemplo { margin-bottom: 24px; text-align: right; }
+    .rodape-acoes { display: flex; justify-content: flex-end; padding: 28px 0 56px; border-top: 1px solid var(--linha); margin-top: 56px; }
+    .seletor-exemplo { margin-bottom: 28px; text-align: right; }
 
-    .aviso-erro { padding: 20px 22px; background: #fffbeb; border: 1px solid #d97706; margin-bottom: 24px; }
-    .aviso-erro-titulo { font-size: 14px; color: #92400e; font-weight: 500; font-style: italic; }
-    .aviso-erro-texto { font-size: 13px; color: #78350f; line-height: 1.55; margin: 4px 0 12px 0; }
-    .aviso-erro-link { font-size: 11px; color: #92400e; text-decoration: underline; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px; }
-    .aviso-erro-fechar { border: none; background: transparent; color: #92400e; font-size: 22px; padding: 0; line-height: 1; }
+    /* ---- Avisos (amarelo da marca) ---- */
+    .aviso-erro { padding: 22px 24px; background: rgba(255, 191, 1, 0.08); border: 1px solid var(--rp-yellow); border-radius: var(--rp-radius); margin-bottom: 28px; }
+    .aviso-erro-titulo { font-size: 16px; color: var(--rp-yellow); font-weight: 500; }
+    .aviso-erro-texto { font-size: 14px; color: rgba(255, 255, 255, 0.8); line-height: 1.55; margin: 6px 0 14px 0; }
+    .aviso-erro-link { font-size: 13px; color: var(--rp-yellow); text-decoration: underline; text-underline-offset: 3px; }
+    .aviso-erro-fechar { border: none; background: transparent; color: var(--rp-yellow); font-size: 22px; padding: 0; line-height: 1; }
 
-    .preview-box { border: 1px solid #d0ccc3; background: #fff; box-shadow: 0 8px 40px rgba(0,0,0,0.08); overflow: auto; }
-    .proposta-pronta-box { text-align: center; padding: 60px 20px; border: 1px solid #d0ccc3; background: #fff; margin-bottom: 40px; }
-    .selo { width: 56px; height: 56px; border-radius: 50%; background: #1a1a1a; color: #fff; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+    .preview-box { border: 1px solid var(--linha); border-radius: var(--rp-radius); background: var(--rp-white); overflow: auto; }
+    .proposta-pronta-box { text-align: center; padding: 64px 20px; border: 1px solid var(--linha); border-radius: var(--rp-radius); background: rgba(255, 255, 255, 0.03); margin-bottom: 40px; }
+    .selo { width: 60px; height: 60px; border-radius: 50%; background: var(--rp-green); color: var(--rp-white); font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 22px; }
 
+    /* ---- Tabela do histórico ---- */
     table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; padding: 14px 10px; font-size: 10px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1.8px; color: #999; border-bottom: 1px solid #1a1a1a; }
-    tr { border-bottom: 1px solid #e8e4dc; }
-    td { padding: 14px 10px; font-size: 15px; }
+    th { text-align: left; padding: 14px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--rp-gray); border-bottom: 1px solid var(--linha); font-weight: 400; }
+    tr { border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+    td { padding: 16px 10px; font-size: 15px; }
 
-    /* ===== Documento da proposta ===== */
-    .pagina { width: 210mm; min-height: 297mm; padding: 20mm; background: #fff; font-family: 'EB Garamond', Georgia, serif; color: #1a1a1a; font-size: 11px; line-height: 1.6; }
-    .doc-cabecalho { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 18px; border-bottom: 1px solid #1a1a1a; margin-bottom: 32px; }
-    .doc-logo { font-size: 30px; font-style: italic; font-weight: 400; letter-spacing: -0.8px; margin-bottom: 16px; line-height: 1; }
-    .doc-endereco, .doc-contato { font-size: 9.5px; color: #555; font-family: 'JetBrains Mono', monospace; line-height: 1.7; margin-bottom: 8px; }
+    /* ===================================================================
+       Documento da proposta — papel branco, mesma tipografia do site
+       =================================================================== */
+    .pagina { width: 210mm; min-height: 297mm; padding: 20mm; background: #fff; font-family: var(--rp-font); color: var(--rp-black); font-size: 11px; line-height: 1.5; }
+    .doc-cabecalho { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid var(--rp-black); margin-bottom: 34px; }
+    .doc-logo { font-size: 30px; font-weight: 500; letter-spacing: -0.03em; margin-bottom: 16px; line-height: 1; }
+    .doc-endereco, .doc-contato { font-size: 10px; color: var(--rp-gray); line-height: 1.7; margin-bottom: 8px; }
     .doc-proposta-box { text-align: right; }
-    .doc-proposta-num { font-size: 9px; text-transform: uppercase; letter-spacing: 2.5px; color: #999; font-family: 'JetBrains Mono', monospace; }
-    .doc-proposta-num-big { font-size: 24px; font-family: 'JetBrains Mono', monospace; font-weight: 500; margin-top: 3px; letter-spacing: -0.5px; }
-    .doc-proposta-data { font-size: 9.5px; color: #555; font-family: 'JetBrains Mono', monospace; margin-top: 10px; }
-    .doc-secao { margin-bottom: 32px; }
-    .doc-secao-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2.8px; color: #999; font-family: 'JetBrains Mono', monospace; margin-bottom: 10px; }
-    .doc-cliente-nome { font-size: 28px; font-style: italic; font-weight: 400; margin-bottom: 10px; letter-spacing: -0.5px; line-height: 1.1; }
-    .doc-apresentacao-txt { font-size: 12.5px; line-height: 1.6; color: #333; margin: 0; max-width: 82%; }
-    /* Bloco fixo: manifesto, premiacoes e metodologia */
-    .doc-manifesto { font-size: 11.5px; line-height: 1.7; color: #333; max-width: 84%; margin: 0 0 30px 0; }
-    .doc-premiacoes { columns: 2; column-gap: 34px; font-size: 10.5px; line-height: 1.85; color: #333; margin-bottom: 34px; }
+    .doc-proposta-num { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--rp-gray); }
+    .doc-proposta-num-big { font-size: 26px; font-weight: 500; margin-top: 4px; letter-spacing: -0.02em; }
+    .doc-proposta-data { font-size: 10px; color: var(--rp-gray); margin-top: 10px; }
+    .doc-secao { margin-bottom: 34px; }
+    .doc-secao-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--rp-green); margin-bottom: 12px; }
+    .doc-cliente-nome { font-size: 30px; font-weight: 500; margin-bottom: 12px; letter-spacing: -0.03em; line-height: 1.05; }
+    .doc-apresentacao-txt { font-size: 12.5px; line-height: 1.55; color: #222; margin: 0; max-width: 82%; }
+
+    /* Bloco fixo: apresentação, premiações e metodologia */
+    .doc-manifesto { font-size: 12px; line-height: 1.6; color: #222; max-width: 88%; margin: 0 0 32px 0; }
+    .doc-manifesto p { margin: 0 0 10px 0; }
+    .doc-manifesto p:last-child { margin-bottom: 0; }
+    .doc-premiacoes { columns: 2; column-gap: 34px; font-size: 11px; line-height: 1.75; color: #222; margin-bottom: 36px; }
     .doc-premiacao { break-inside: avoid; }
     .doc-metodologia { break-inside: avoid; page-break-inside: avoid; }
-    .doc-metodo-grade { margin-bottom: 24px; }
-    .doc-metodo-linha { display: grid; grid-template-columns: 118px 1fr; align-items: center; gap: 16px; margin-bottom: 9px; }
-    .doc-metodo-nome { font-size: 10px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.4px; color: #1a1a1a; }
+    .doc-metodo-grade { margin-bottom: 26px; }
+    .doc-metodo-linha { display: grid; grid-template-columns: 124px 1fr; align-items: center; gap: 16px; margin-bottom: 10px; }
+    .doc-metodo-nome { font-size: 11px; letter-spacing: 0.01em; color: var(--rp-black); }
     .doc-metodo-nome b { font-weight: 500; }
     .doc-metodo-trilha { display: grid; grid-template-columns: repeat(10, 1fr); align-items: center; }
     .doc-metodo-passo { position: relative; display: flex; justify-content: center; align-items: center; height: 10px; }
-    .doc-metodo-passo::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #1a1a1a; }
+    .doc-metodo-passo::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--rp-black); }
     .doc-metodo-passo:first-child::before { left: 50%; }
     .doc-metodo-passo:last-child::before { right: 50%; }
-    .doc-metodo-quadro { position: relative; width: 8px; height: 8px; border: 1px solid #1a1a1a; background: #fff; }
-    .doc-metodo-quadro.ativo { background: #1a1a1a; }
+    .doc-metodo-quadro { position: relative; width: 8px; height: 8px; border: 1px solid var(--rp-black); background: #fff; }
+    .doc-metodo-quadro.ativo { background: var(--rp-black); }
     /* fluxo por coluna: A,B,C na esquerda e D,E na direita, como no modelo impresso */
-    .doc-metodo-etapas { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, auto); grid-auto-flow: column; gap: 14px 34px; }
-    .doc-metodo-etapa { display: grid; grid-template-columns: 16px 1fr; gap: 10px; break-inside: avoid; }
-    .doc-metodo-letra { width: 16px; height: 16px; border: 1px solid #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: 8.5px; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
-    .doc-metodo-txt { font-size: 10px; line-height: 1.55; color: #444; margin: 0; }
-    .doc-metodo-txt strong { font-weight: 500; color: #1a1a1a; }
-    .doc-servico { padding-top: 22px; padding-bottom: 22px; border-top: 1px solid #1a1a1a; }
+    .doc-metodo-etapas { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, auto); grid-auto-flow: column; gap: 16px 34px; }
+    .doc-metodo-etapa { display: grid; grid-template-columns: 18px 1fr; gap: 10px; break-inside: avoid; }
+    .doc-metodo-letra { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--rp-black); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; }
+    .doc-metodo-txt { font-size: 10.5px; line-height: 1.5; color: #333; margin: 0; }
+    .doc-metodo-txt strong { font-weight: 500; color: var(--rp-black); }
+
+    .doc-servico { padding-top: 24px; padding-bottom: 24px; border-top: 1px solid var(--rp-black); }
     .doc-servico-header { display: grid; grid-template-columns: 32px 1fr auto auto; gap: 18px; align-items: baseline; margin-bottom: 10px; }
-    .doc-servico-num { font-size: 10px; color: #999; font-family: 'JetBrains Mono', monospace; letter-spacing: 1.5px; }
-    .doc-servico-titulo { font-size: 20px; font-style: italic; font-weight: 400; letter-spacing: -0.3px; }
-    .doc-servico-prazo { font-size: 9.5px; color: #666; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1.2px; white-space: nowrap; }
-    .doc-servico-valor { font-size: 15px; font-family: 'JetBrains Mono', monospace; font-weight: 500; white-space: nowrap; }
-    .doc-servico-parcelas { color: #999; font-size: 10px; }
-    .doc-servico-desc { font-size: 11px; color: #444; margin-left: 50px; margin-bottom: 14px; margin-top: 0; max-width: 85%; font-style: italic; }
+    .doc-servico-num { font-size: 11px; color: var(--rp-gray); letter-spacing: 0.14em; }
+    .doc-servico-titulo { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+    .doc-servico-prazo { font-size: 10px; color: var(--rp-gray); text-transform: uppercase; letter-spacing: 0.12em; white-space: nowrap; }
+    .doc-servico-valor { font-size: 16px; font-weight: 500; white-space: nowrap; letter-spacing: -0.01em; }
+    .doc-servico-parcelas { color: var(--rp-gray); font-size: 10px; font-weight: 400; letter-spacing: 0; }
+    .doc-servico-desc { font-size: 11px; color: #333; margin-left: 50px; margin-bottom: 14px; margin-top: 0; max-width: 85%; }
     .doc-itens-lista { margin-left: 50px; }
-    .doc-item { display: grid; grid-template-columns: 150px 1fr; gap: 16px; margin-bottom: 6px; font-size: 11px; align-items: baseline; }
-    .doc-item-rotulo { color: #999; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.2px; padding-top: 2px; }
-    .doc-item-conteudo { color: #1a1a1a; line-height: 1.55; }
-    .doc-cronograma-intro { font-size: 10px; color: #888; font-style: italic; max-width: 75%; margin-bottom: 16px; }
-    .doc-cronograma-linha { display: flex; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid #eee; font-size: 11px; }
-    .doc-cronograma-etapa { color: #333; flex: 1; padding-right: 16px; }
-    .doc-cronograma-duracao { color: #666; font-family: 'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; white-space: nowrap; }
-    .doc-observacoes { margin-top: 40px; padding-top: 22px; border-top: 1px solid #1a1a1a; }
+    .doc-item { display: grid; grid-template-columns: 150px 1fr; gap: 16px; margin-bottom: 7px; font-size: 11px; align-items: baseline; }
+    .doc-item-rotulo { color: var(--rp-gray); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; padding-top: 2px; }
+    .doc-item-conteudo { color: var(--rp-black); line-height: 1.5; }
+    .doc-cronograma-intro { font-size: 10.5px; color: var(--rp-gray); max-width: 75%; margin-bottom: 16px; }
+    .doc-cronograma-linha { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e5e5e5; font-size: 11px; }
+    .doc-cronograma-etapa { color: #222; flex: 1; padding-right: 16px; }
+    .doc-cronograma-duracao { color: var(--rp-gray); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; white-space: nowrap; }
+    .doc-observacoes { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--rp-black); }
     .doc-obs-bloco { margin-bottom: 18px; }
-    .doc-obs-titulo { display: block; font-size: 9.5px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: 1.8px; margin-bottom: 5px; font-weight: 500; }
-    .doc-obs-txt { font-size: 10px; color: #555; line-height: 1.6; margin: 0; }
+    .doc-obs-titulo { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 6px; font-weight: 500; }
+    .doc-obs-txt { font-size: 10.5px; color: #444; line-height: 1.55; margin: 0; }
     .doc-rodape { margin-top: 50px; }
-    .doc-assinatura-linha { border-bottom: 1px solid #1a1a1a; height: 32px; margin-bottom: 5px; }
-    .doc-assinatura-label { font-size: 9px; color: #999; text-transform: uppercase; letter-spacing: 2.2px; font-family: 'JetBrains Mono', monospace; }
+    .doc-assinatura-linha { border-bottom: 1px solid var(--rp-black); height: 32px; margin-bottom: 6px; }
+    .doc-assinatura-label { font-size: 10px; color: var(--rp-gray); text-transform: uppercase; letter-spacing: 0.14em; }
 
     /* ===== Impressão ===== */
     @media print {
@@ -136,8 +202,16 @@
       #area-impressao, #area-impressao * { visibility: visible; }
       #area-impressao { position: absolute; left: 0; top: 0; width: 100%; }
       .no-print { display: none !important; }
-      .preview-box { border: none; box-shadow: none; }
+      .preview-box { border: none; border-radius: 0; box-shadow: none; }
       .pagina { box-shadow: none; }
+    }
+
+    /* ===== Telas estreitas ===== */
+    @media (max-width: 900px) {
+      .container { padding: 32px 14px 0; }
+      .header { flex-direction: column; align-items: flex-start; gap: 20px; }
+      h1 { font-size: 34px; }
+      .linha-campos { flex-direction: column; gap: 0; }
     }
   </style>
 </head>
@@ -235,14 +309,20 @@
     // ===== Conteudo fixo da proposta =====
     // Reproduz a abertura do modelo impresso da miligrama (proposta 098/2022).
     // Editar aqui muda em todas as propostas geradas dali em diante.
-    const MANIFESTO =
-      "Nós não lemos receita. O design é uma ferramenta que permite que marcas e pessoas " +
-      "possam se expressar. Por isso nosso design é autoral, mas não é assinado. Não nos " +
-      "damos bem com menu de congelados. Cada projeto, cada prato servido, é criado com os " +
-      "ingredientes que você nos oferece, pensados exclusivamente para saciar a sua fome. " +
-      "A única constante é o nosso tempero, a nossa forma de fazer e nossa metodologia. " +
-      "As miligramas que levam seu projeto de um almoço despretensioso para um prato " +
-      "3 estrelas Michelin.";
+    // Texto de apresentacao do rgondim.com.br (pagina About), vertido pro
+    // portugues porque a proposta inteira e em PT. O original em ingles esta
+    // em https://rgondim.com.br/about/ — trocar aqui se preferir a versao de la.
+    const BIO = [
+      "Sou um designer gráfico brasileiro com mais de 15 anos de experiência e uma lista " +
+      "razoavelmente longa de prêmios — quem é que não gosta deles —, tanto como cofundador " +
+      "e diretor de criação de um estúdio, a miligrama, quanto, atualmente, como Design Manager " +
+      "na Tátil Design, a 6ª melhor agência de design do mundo segundo o D&AD, com escritórios " +
+      "no Rio de Janeiro, em São Paulo e em Londres.",
+
+      "A cada dois anos, mais ou menos, me envolvo obsessivamente com algum ofício específico " +
+      "do design: design editorial (sobre o qual ainda dou aula), design de tipos, metodologia " +
+      "criativa e, mais recentemente, modelagem e animação 3D.",
+    ];
 
     const PREMIACOES = [
       "Bienal Iberoamericana de Diseño – Madrid (2020)",
@@ -590,7 +670,7 @@
               <h1 style={{fontSize: 32}}>Proposta {proposta.numeroFmt} salva</h1>
               <p style={{fontSize: 14, color: "#666", fontStyle: "italic", marginTop: 12}}>
                 Para gerar o PDF, clique em imprimir e escolha "Salvar como PDF" no diálogo.<br />
-                O nome sugerido será: <code style={{fontFamily: "'JetBrains Mono', monospace", fontSize: 12, background: "#f5f3ef", padding: "2px 8px"}}>{nomeArquivo}.pdf</code>
+                O nome sugerido será: <code style={{fontSize: 12, background: "rgba(255,255,255,0.08)", padding: "3px 9px", borderRadius: 6}}>{nomeArquivo}.pdf</code>
               </p>
               <div style={{ display: "flex", gap: 12, marginTop: 28, justifyContent: "center" }}>
                 <button className="btn-primario" onClick={imprimir}>⎙ imprimir / salvar PDF</button>
@@ -624,10 +704,10 @@
               <tbody>
                 {historico.map((p) => (
                   <tr key={p.id}>
-                    <td><code style={{fontFamily: "'JetBrains Mono', monospace", fontSize: 12}}>{p.numero_proposta}</code></td>
+                    <td><code style={{fontSize: 13, letterSpacing: "0.04em"}}>{p.numero_proposta}</code></td>
                     <td style={{fontStyle: "italic"}}>{p.cliente}</td>
-                    <td style={{fontFamily: "'JetBrains Mono', monospace", fontSize: 12}}>{formatarValor(p.valor_total)}</td>
-                    <td style={{color: "#999", fontSize: 12, fontFamily: "'JetBrains Mono', monospace"}}>
+                    <td style={{fontSize: 14, fontWeight: 500}}>{formatarValor(p.valor_total)}</td>
+                    <td style={{color: "var(--rp-gray)", fontSize: 13}}>
                       {new Date(p.criado_em).toLocaleDateString("pt-BR")}
                     </td>
                   </tr>
@@ -662,7 +742,9 @@
           </section>
 
           <section className="doc-secao">
-            <p className="doc-manifesto">{MANIFESTO}</p>
+            <div className="doc-manifesto">
+              {BIO.map((paragrafo, i) => <p key={i}>{paragrafo}</p>)}
+            </div>
 
             <div className="doc-secao-label">principais premiações</div>
             <div className="doc-premiacoes">

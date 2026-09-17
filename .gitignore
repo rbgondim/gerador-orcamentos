@@ -1,2 +1,9 @@
 .DS_Store
 .vercel
+
+# Fontes licenciadas (National 2 — Klim Type Foundry).
+# NAO commitar enquanto este repositorio for publico: subir os arquivos .otf
+# aqui e redistribuicao, que a licenca nao permite. Servir a fonte no site
+# (como o rgondim.com.br ja faz) e uso normal; publicar o arquivo-fonte num
+# repo aberto e outra coisa. Tornando o repo privado, pode commitar.
+assets/fonts/
