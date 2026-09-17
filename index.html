@@ -110,6 +110,41 @@
     .btn-link { border: none; background: none; color: var(--rp-gray); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
     .btn-link:hover { color: var(--rp-white); opacity: 1; }
 
+    /* ---- Templates de projeto ---- */
+    .templates { margin-bottom: 42px; }
+    .templates-linha { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .templates-label { font-size: 11px; color: var(--rp-gray); text-transform: uppercase; letter-spacing: 0.14em; margin-right: 4px; }
+    .btn-add.is-ativo { background: var(--rp-white); color: var(--rp-black); border-color: var(--rp-white); }
+
+    .template-painel { display: grid; grid-template-columns: 1.35fr 1fr; gap: 28px; margin-top: 18px; padding: 26px; border: 1px solid var(--linha); border-radius: var(--rp-radius); background: rgba(255,255,255,0.03); }
+    .template-modulos { display: flex; flex-direction: column; gap: 2px; }
+    /* .template-modulo e um <label>, entao precisa anular a regra global de
+       label (caixa alta, tracking, cor e margens) que vale pros campos do form */
+    .template-modulo { display: grid; grid-template-columns: 16px 1fr auto; gap: 12px; align-items: start; padding: 9px 10px; border-radius: 10px; cursor: pointer; text-transform: none; letter-spacing: normal; color: var(--rp-white); font-size: 14px; margin: 0; }
+    .template-modulo:hover { background: rgba(255,255,255,0.05); }
+    .template-modulo.is-fixo { cursor: default; opacity: 0.6; }
+    .template-modulo.is-fixo:hover { background: transparent; }
+    .template-modulo input { width: 15px; height: 15px; margin: 2px 0 0 0; accent-color: var(--rp-green); }
+    .template-modulo-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .template-modulo-rotulo { font-size: 14px; color: var(--rp-white); }
+    .template-modulo-conteudo { font-size: 11.5px; color: var(--rp-gray); line-height: 1.4; }
+    .template-modulo-dias { font-size: 12px; color: var(--rp-gray); white-space: nowrap; padding-top: 2px; }
+
+    .template-resumo { display: flex; flex-direction: column; gap: 20px; }
+    .template-prazo { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding-bottom: 18px; border-bottom: 1px solid var(--linha); }
+    .template-prazo-num { font-size: 44px; font-weight: 500; letter-spacing: -0.03em; line-height: 1; }
+    .template-prazo-label { font-size: 13px; color: var(--rp-gray); }
+    .template-prazo-obs { font-size: 11px; color: var(--rp-yellow); width: 100%; margin-top: 2px; }
+
+    .template-refs-label { font-size: 11px; color: var(--rp-gray); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 10px; }
+    .template-ref { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; font-size: 12px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); }
+    .template-ref-valor { font-weight: 500; color: var(--rp-white); }
+    .template-refs-obs { font-size: 11px; color: var(--rp-gray); line-height: 1.5; margin: 10px 0 0 0; }
+
+    @media (max-width: 900px) {
+      .template-painel { grid-template-columns: 1fr; }
+    }
+
     .rodape-acoes { display: flex; justify-content: flex-end; padding: 28px 0 56px; border-top: 1px solid var(--linha); margin-top: 56px; }
     .seletor-exemplo { margin-bottom: 28px; text-align: right; }
 
@@ -418,6 +453,94 @@
       return `${String(n).padStart(4, "0")}/${ano}`;
     }
 
+    // ===================================================================
+    // Templates de projeto
+    // ===================================================================
+    // Os dias por modulo NAO sao chute: saem do cronograma do contrato
+    // 088/2022 (Conviver), que detalha as etapas reais de um projeto de
+    // identidade — pesquisa/conceito 10, design story 10, identidade 15,
+    // aplicacoes 5, revisoes 5. O total e arredondado PRA CIMA no multiplo
+    // de 5 mais proximo, que e o jeito seguro de prometer prazo.
+    //
+    // Confere contra o historico real:
+    //   6 modulos padrao -> 45 dias  (Conviver 085/2022 cobrou 45)
+    //   so o essencial   -> 35 dias  (Anik 069 e Teatro Espiral 096: 35)
+    //
+    // Para criar um template novo, copiar o bloco e trocar os modulos.
+    // Modulos que compartilham o mesmo "etapa" viram UMA linha no
+    // cronograma, com os dias somados.
+    const TEMPLATES = [
+      {
+        id: "identidade",
+        nome: "Design de Identidade",
+        descricao: "utilizaremos a metodologia sem receita na criação de marcas, com documentação de todo o material produzido entregue de forma digital no final do projeto.",
+        modulos: [
+          { id: "estrategia", rotulo: "estratégia", dias: 10, padrao: true,
+            conteudo: "ingredientes da marca, arquétipos, personalidade e pilares da marca",
+            etapa: "Apresentação de Pesquisa/Conceito" },
+          { id: "designstory", rotulo: "conceito & design story", dias: 10, padrao: true,
+            conteudo: "tom de voz, manifesto e linguagem fotográfica",
+            etapa: "Apresentação de Design Story (após aprovação da Pesquisa/Conceito)" },
+          { id: "identidade", rotulo: "identidade visual", dias: 12, padrao: true, obrigatorio: true,
+            conteudo: "marca, escolha tipográfica, ilustrações/grafismos e cores institucionais",
+            etapa: "Apresentação do Design de Identidade (após aprovação)" },
+          { id: "brandbook", rotulo: "brandbook", dias: 3, padrao: true,
+            conteudo: "material guia com as regras de uso e aplicações da identidade",
+            etapa: "Apresentação do Design de Identidade (após aprovação)" },
+          { id: "arquitetura", rotulo: "arquitetura de marca", dias: 5, padrao: false,
+            conteudo: "organização e concepção visual das submarcas",
+            etapa: "Arquitetura de marca e submarcas" },
+          { id: "aplgraficas", rotulo: "aplicações gráficas", dias: 3, padrao: true,
+            conteudo: "cartão de visitas, papel timbrado e envelope",
+            etapa: "Aplicações (após aprovação da Identidade Visual)" },
+          { id: "apldigitais", rotulo: "aplicações digitais", dias: 2, padrao: true,
+            conteudo: "assinatura de e-mail, redes sociais (perfil, capa e modelo de postagens para feed e stories), modelo de apresentação",
+            etapa: "Aplicações (após aprovação da Identidade Visual)" },
+        ],
+        // entram no cronograma sempre, independente dos modulos marcados
+        etapasFixas: [{ nome: "Revisões (2 rodadas de alterações)", dias: 5 }],
+        // propostas reais, pra comparar antes de definir o valor
+        referencias: [
+          { cliente: "Anik",           ano: 2022, modulos: 3, dias: 35, valor: 9000 },
+          { cliente: "Teatro Espiral", ano: 2022, modulos: 3, dias: 35, valor: 9000 },
+          { cliente: "Pedro Otoni",    ano: 2022, modulos: 6, dias: 40, valor: 15000 },
+          { cliente: "Conviver",       ano: 2022, modulos: 6, dias: 45, valor: 15700 },
+          { cliente: "Brisanet",       ano: 2022, modulos: 7, dias: 45, valor: 17200 },
+        ],
+      },
+    ];
+
+    // Arredonda pra cima no multiplo de 5 — nunca prometer menos prazo do que a conta deu.
+    function arredondarPrazo(dias) { return Math.ceil(dias / 5) * 5; }
+
+    function montarTemplate(template, marcados) {
+      const escolhidos = template.modulos.filter((m) => marcados[m.id]);
+      const dias = escolhidos.reduce((t, m) => t + m.dias, 0) +
+                   template.etapasFixas.reduce((t, e) => t + e.dias, 0);
+      const prazo = arredondarPrazo(dias);
+
+      const servico = {
+        titulo: template.nome,
+        prazo: `${prazo} dias úteis`,
+        valor: "",
+        parcelas: "50% no início e 50% na entrega",
+        descricao: template.descricao,
+        itens: escolhidos.map((m) => ({ rotulo: m.rotulo, conteudo: m.conteudo })),
+      };
+
+      // modulos que dividem a mesma etapa viram uma linha so, somando os dias
+      const porEtapa = [];
+      escolhidos.forEach((m) => {
+        const existente = porEtapa.find((e) => e.nome === m.etapa);
+        if (existente) existente.dias += m.dias;
+        else porEtapa.push({ nome: m.etapa, dias: m.dias });
+      });
+      template.etapasFixas.forEach((e) => porEtapa.push({ nome: e.nome, dias: e.dias }));
+
+      const etapas = porEtapa.map((e) => ({ nome: e.nome, duracao: `${e.dias} dias úteis` }));
+      return { servico, etapas, diasBrutos: dias, prazo };
+    }
+
     function criarServicoVazio() {
       return { titulo: "", prazo: "", valor: "", parcelas: "", descricao: "", itens: [{ rotulo: "", conteudo: "" }] };
     }
@@ -464,6 +587,14 @@
         setServicos(novo);
       }
       function adicionarServico() { setServicos([...servicos, criarServicoVazio()]); }
+
+      function aplicarTemplate(servico, etapas) {
+        // se o formulario ainda esta em branco, substitui em vez de acrescentar
+        const servicoEmBranco = servicos.length === 1 && !servicos[0].titulo && !servicos[0].valor;
+        setServicos(servicoEmBranco ? [servico] : [...servicos, servico]);
+        const cronogramaEmBranco = cronograma.length === 1 && !cronograma[0].nome;
+        setCronograma(cronogramaEmBranco ? etapas : [...cronograma, ...etapas]);
+      }
       function removerServico(idx) { setServicos(servicos.filter((_, i) => i !== idx)); }
       function atualizarEtapa(idx, campo, valor) {
         const novo = [...cronograma];
@@ -615,6 +746,8 @@
             <label>validade (dias)</label>
             <input type="number" style={{width: 140}} value={validadeDias} onChange={(e) => setValidadeDias(parseInt(e.target.value) || 30)} />
           </section>
+
+          <PainelTemplates onAplicar={aplicarTemplate} />
 
           <section className="secao">
             <div className="secao-header">
@@ -904,6 +1037,95 @@
             </div>
           </section>
 
+        </div>
+      );
+    }
+
+    function PainelTemplates({ onAplicar }) {
+      const [aberto, setAberto] = useState(null);
+      const [marcados, setMarcados] = useState({});
+
+      function abrir(template) {
+        if (aberto === template.id) { setAberto(null); return; }
+        const iniciais = {};
+        template.modulos.forEach((m) => { iniciais[m.id] = m.padrao; });
+        setMarcados(iniciais);
+        setAberto(template.id);
+      }
+
+      const template = TEMPLATES.find((t) => t.id === aberto);
+      const previa = template ? montarTemplate(template, marcados) : null;
+
+      return (
+        <div className="templates">
+          <div className="templates-linha">
+            <span className="templates-label">começar de um template</span>
+            {TEMPLATES.map((t) => (
+              <button key={t.id}
+                      className={"btn-add" + (aberto === t.id ? " is-ativo" : "")}
+                      onClick={() => abrir(t)}>
+                {t.nome}
+              </button>
+            ))}
+          </div>
+
+          {template && (
+            <div className="template-painel">
+              <div className="template-modulos">
+                {template.modulos.map((m) => (
+                  <label key={m.id} className={"template-modulo" + (m.obrigatorio ? " is-fixo" : "")}>
+                    <input type="checkbox"
+                           checked={!!marcados[m.id]}
+                           disabled={m.obrigatorio}
+                           onChange={(e) => setMarcados({ ...marcados, [m.id]: e.target.checked })} />
+                    <span className="template-modulo-txt">
+                      <span className="template-modulo-rotulo">{m.rotulo}</span>
+                      <span className="template-modulo-conteudo">{m.conteudo}</span>
+                    </span>
+                    <span className="template-modulo-dias">{m.dias}d</span>
+                  </label>
+                ))}
+                <div className="template-modulo is-fixo">
+                  <span className="template-modulo-txt">
+                    <span className="template-modulo-rotulo">revisões</span>
+                    <span className="template-modulo-conteudo">2 rodadas de alterações, sempre incluídas</span>
+                  </span>
+                  <span className="template-modulo-dias">
+                    {template.etapasFixas.reduce((t, e) => t + e.dias, 0)}d
+                  </span>
+                </div>
+              </div>
+
+              <div className="template-resumo">
+                <div className="template-prazo">
+                  <span className="template-prazo-num">{previa.prazo}</span>
+                  <span className="template-prazo-label">dias úteis</span>
+                  {previa.diasBrutos !== previa.prazo && (
+                    <span className="template-prazo-obs">soma {previa.diasBrutos}, arredondado pra cima</span>
+                  )}
+                </div>
+
+                <div className="template-refs">
+                  <div className="template-refs-label">o que você já cobrou</div>
+                  {template.referencias.map((r, i) => (
+                    <div key={i} className="template-ref">
+                      <span>{r.cliente} · {r.ano}</span>
+                      <span>{r.modulos} itens · {r.dias}d</span>
+                      <span className="template-ref-valor">{formatarValor(r.valor)}</span>
+                    </div>
+                  ))}
+                  <p className="template-refs-obs">
+                    Valores de 2022 — servem de referência, não de preço. O campo de valor entra vazio de propósito.
+                  </p>
+                </div>
+
+                <button className="btn-primario"
+                        onClick={() => { onAplicar(previa.servico, previa.etapas); setAberto(null); }}>
+                  usar este template
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       );
     }
