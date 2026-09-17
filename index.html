@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gerador de Orçamentos · miligrama design</title>
+  <title>Gerador de Orçamentos · rodrigo gondim</title>
   <style>
     /* ===================================================================
        Sistema visual do rgondim.com.br (tema rodrigo-portfolio-theme).
@@ -120,7 +120,7 @@
     .aviso-erro-link { font-size: 13px; color: var(--rp-yellow); text-decoration: underline; text-underline-offset: 3px; }
     .aviso-erro-fechar { border: none; background: transparent; color: var(--rp-yellow); font-size: 22px; padding: 0; line-height: 1; }
 
-    .preview-box { border: 1px solid var(--linha); border-radius: var(--rp-radius); background: var(--rp-white); overflow: auto; }
+    .preview-box { border: 1px solid var(--linha); border-radius: var(--rp-radius); background: var(--rp-black); overflow: auto; }
     .proposta-pronta-box { text-align: center; padding: 64px 20px; border: 1px solid var(--linha); border-radius: var(--rp-radius); background: rgba(255, 255, 255, 0.03); margin-bottom: 40px; }
     .selo { width: 60px; height: 60px; border-radius: 50%; background: var(--rp-green); color: var(--rp-white); font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 22px; }
 
@@ -131,73 +131,95 @@
     td { padding: 16px 10px; font-size: 15px; }
 
     /* ===================================================================
-       Documento da proposta — papel branco, mesma tipografia do site
+       Documento da proposta — mesma identidade do rgondim.com.br:
+       preto, National 2 e as 5 cores de marca codificando as seções.
+       print-color-adjust: exact é obrigatório — sem ele o navegador
+       descarta o fundo preto na impressão/PDF e o texto branco some.
        =================================================================== */
-    .pagina { width: 210mm; min-height: 297mm; padding: 20mm; background: #fff; font-family: var(--rp-font); color: var(--rp-black); font-size: 11px; line-height: 1.5; }
-    .doc-cabecalho { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid var(--rp-black); margin-bottom: 34px; }
-    .doc-logo { font-size: 30px; font-weight: 500; letter-spacing: -0.03em; margin-bottom: 16px; line-height: 1; }
+    .pagina {
+      width: 210mm; min-height: 297mm; padding: 20mm;
+      background: var(--rp-black); color: var(--rp-white);
+      font-family: var(--rp-font); font-size: 11px; line-height: 1.5;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .doc-cabecalho { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid var(--rp-white); margin-bottom: 34px; }
+    .doc-marca { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+    .doc-amp { width: 30px; height: 30px; flex: none; display: block; }
+    .doc-logo { font-size: 30px; font-weight: 500; letter-spacing: -0.03em; line-height: 1; }
     .doc-endereco, .doc-contato { font-size: 10px; color: var(--rp-gray); line-height: 1.7; margin-bottom: 8px; }
     .doc-proposta-box { text-align: right; }
     .doc-proposta-num { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--rp-gray); }
     .doc-proposta-num-big { font-size: 26px; font-weight: 500; margin-top: 4px; letter-spacing: -0.02em; }
     .doc-proposta-data { font-size: 10px; color: var(--rp-gray); margin-top: 10px; }
     .doc-secao { margin-bottom: 34px; }
-    .doc-secao-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--rp-green); margin-bottom: 12px; }
+
+    /* Labels coloridos por seção — mesma convenção do bloco de info do About */
+    .doc-secao-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 12px; color: var(--rp-green); }
+    .doc-secao-label--green  { color: var(--rp-green); }
+    .doc-secao-label--blue   { color: var(--rp-blue); }
+    .doc-secao-label--yellow { color: var(--rp-yellow); }
+    .doc-secao-label--pink   { color: var(--rp-pink); }
+    .doc-secao-label--red    { color: var(--rp-red); }
+
     .doc-cliente-nome { font-size: 30px; font-weight: 500; margin-bottom: 12px; letter-spacing: -0.03em; line-height: 1.05; }
-    .doc-apresentacao-txt { font-size: 12.5px; line-height: 1.55; color: #222; margin: 0; max-width: 82%; }
+    .doc-apresentacao-txt { font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,0.85); margin: 0; max-width: 82%; }
 
     /* Bloco fixo: apresentação, premiações e metodologia */
-    .doc-manifesto { font-size: 12px; line-height: 1.6; color: #222; max-width: 88%; margin: 0 0 32px 0; }
+    .doc-manifesto { font-size: 12px; line-height: 1.6; color: rgba(255,255,255,0.85); max-width: 88%; margin: 0 0 32px 0; }
     .doc-manifesto p { margin: 0 0 10px 0; }
     .doc-manifesto p:last-child { margin-bottom: 0; }
-    .doc-premiacoes { columns: 2; column-gap: 34px; font-size: 11px; line-height: 1.75; color: #222; margin-bottom: 36px; }
+    .doc-premiacoes { columns: 2; column-gap: 34px; font-size: 11px; line-height: 1.75; color: rgba(255,255,255,0.85); margin-bottom: 36px; }
     .doc-premiacao { break-inside: avoid; }
     .doc-metodologia { break-inside: avoid; page-break-inside: avoid; }
     .doc-metodo-grade { margin-bottom: 26px; }
     .doc-metodo-linha { display: grid; grid-template-columns: 124px 1fr; align-items: center; gap: 16px; margin-bottom: 10px; }
-    .doc-metodo-nome { font-size: 11px; letter-spacing: 0.01em; color: var(--rp-black); }
+    .doc-metodo-nome { font-size: 11px; letter-spacing: 0.01em; color: var(--rp-white); }
     .doc-metodo-nome b { font-weight: 500; }
     .doc-metodo-trilha { display: grid; grid-template-columns: repeat(10, 1fr); align-items: center; }
     .doc-metodo-passo { position: relative; display: flex; justify-content: center; align-items: center; height: 10px; }
-    .doc-metodo-passo::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--rp-black); }
+    .doc-metodo-passo::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: rgba(255,255,255,0.45); }
     .doc-metodo-passo:first-child::before { left: 50%; }
     .doc-metodo-passo:last-child::before { right: 50%; }
-    .doc-metodo-quadro { position: relative; width: 8px; height: 8px; border: 1px solid var(--rp-black); background: #fff; }
-    .doc-metodo-quadro.ativo { background: var(--rp-black); }
+    /* vazio = contorno branco; preenchido = cor da fase (ordem fixa do site:
+       green, blue, yellow, pink, red — a mesma do marquee da home) */
+    .doc-metodo-quadro { position: relative; width: 8px; height: 8px; border: 1px solid var(--rp-white); background: var(--rp-black); }
+    .doc-metodo-quadro.ativo { background: var(--fase); border-color: var(--fase); }
+    .doc-metodo-letra { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--fase); color: var(--fase); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; }
     /* fluxo por coluna: A,B,C na esquerda e D,E na direita, como no modelo impresso */
     .doc-metodo-etapas { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, auto); grid-auto-flow: column; gap: 16px 34px; }
     .doc-metodo-etapa { display: grid; grid-template-columns: 18px 1fr; gap: 10px; break-inside: avoid; }
-    .doc-metodo-letra { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--rp-black); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; }
-    .doc-metodo-txt { font-size: 10.5px; line-height: 1.5; color: #333; margin: 0; }
-    .doc-metodo-txt strong { font-weight: 500; color: var(--rp-black); }
+    .doc-metodo-txt { font-size: 10.5px; line-height: 1.5; color: rgba(255,255,255,0.75); margin: 0; }
+    .doc-metodo-txt strong { font-weight: 500; color: var(--rp-white); }
 
-    .doc-servico { padding-top: 24px; padding-bottom: 24px; border-top: 1px solid var(--rp-black); }
+    .doc-servico { padding-top: 24px; padding-bottom: 24px; border-top: 1px solid var(--rp-white); }
     .doc-servico-header { display: grid; grid-template-columns: 32px 1fr auto auto; gap: 18px; align-items: baseline; margin-bottom: 10px; }
     .doc-servico-num { font-size: 11px; color: var(--rp-gray); letter-spacing: 0.14em; }
     .doc-servico-titulo { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
     .doc-servico-prazo { font-size: 10px; color: var(--rp-gray); text-transform: uppercase; letter-spacing: 0.12em; white-space: nowrap; }
     .doc-servico-valor { font-size: 16px; font-weight: 500; white-space: nowrap; letter-spacing: -0.01em; }
     .doc-servico-parcelas { color: var(--rp-gray); font-size: 10px; font-weight: 400; letter-spacing: 0; }
-    .doc-servico-desc { font-size: 11px; color: #333; margin-left: 50px; margin-bottom: 14px; margin-top: 0; max-width: 85%; }
+    .doc-servico-desc { font-size: 11px; color: rgba(255,255,255,0.75); margin-left: 50px; margin-bottom: 14px; margin-top: 0; max-width: 85%; }
     .doc-itens-lista { margin-left: 50px; }
     .doc-item { display: grid; grid-template-columns: 150px 1fr; gap: 16px; margin-bottom: 7px; font-size: 11px; align-items: baseline; }
     .doc-item-rotulo { color: var(--rp-gray); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; padding-top: 2px; }
-    .doc-item-conteudo { color: var(--rp-black); line-height: 1.5; }
+    .doc-item-conteudo { color: var(--rp-white); line-height: 1.5; }
     .doc-cronograma-intro { font-size: 10.5px; color: var(--rp-gray); max-width: 75%; margin-bottom: 16px; }
-    .doc-cronograma-linha { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e5e5e5; font-size: 11px; }
-    .doc-cronograma-etapa { color: #222; flex: 1; padding-right: 16px; }
+    .doc-cronograma-linha { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.18); font-size: 11px; }
+    .doc-cronograma-etapa { color: rgba(255,255,255,0.9); flex: 1; padding-right: 16px; }
     .doc-cronograma-duracao { color: var(--rp-gray); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; white-space: nowrap; }
-    .doc-observacoes { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--rp-black); }
+    .doc-observacoes { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--rp-white); }
     .doc-obs-bloco { margin-bottom: 18px; }
-    .doc-obs-titulo { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 6px; font-weight: 500; }
-    .doc-obs-txt { font-size: 10.5px; color: #444; line-height: 1.55; margin: 0; }
+    .doc-obs-titulo { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 6px; font-weight: 500; color: var(--rp-white); }
+    .doc-obs-txt { font-size: 10.5px; color: rgba(255,255,255,0.72); line-height: 1.55; margin: 0; }
     .doc-rodape { margin-top: 50px; }
-    .doc-assinatura-linha { border-bottom: 1px solid var(--rp-black); height: 32px; margin-bottom: 6px; }
+    .doc-assinatura-linha { border-bottom: 1px solid var(--rp-white); height: 32px; margin-bottom: 6px; }
     .doc-assinatura-label { font-size: 10px; color: var(--rp-gray); text-transform: uppercase; letter-spacing: 0.14em; }
 
     /* ===== Impressão ===== */
     @media print {
       @page { size: A4; margin: 0; }
+      /* sem isto o navegador joga fora o fundo preto e o texto branco some */
+      #area-impressao, #area-impressao * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       body * { visibility: hidden; }
       #area-impressao, #area-impressao * { visibility: visible; }
       #area-impressao { position: absolute; left: 0; top: 0; width: 100%; }
@@ -298,8 +320,30 @@
       return res.json();
     }
 
+
+    // O & do rgondim.com.br, embutido pra nao depender de arquivo externo.
+    // Os 5 paths sao as variantes "-1" de assets/img/ampersands/ do tema.
+    const AMPERSANDS = {
+      green:  "M9.57,33.05c0-6.68,4.37-10.06,8.99-10.06,4.19,0,5.93,1.56,6.81,2.69l.06-.06L13.45,7.5h28.55l-.69,3.87-1.12,6.56-1.56-.25c.69-3.87.44-5.43-1.81-5.43h-14.24l14.49,27.8c1.25-1.75,1.87-4.06,1.87-7.06,0-4.19-1.19-6.5-2.62-8.56l7.5-1.87c.94,1.69,1.62,3.81,1.62,7.5,0,5.93-2.44,10.68-6.43,13.8l2.19,4.19-.69.37-2.56-3.81c-3.06,2-6.93,3.12-11.24,3.12-10.62,0-17.12-6.37-17.12-14.68ZM16.07,33.8c0,5.75,4.31,10.31,10.62,10.31,4,0,7.06-.87,9.12-2.69l-7.18-10.87c-2.31-3.5-4.25-4.37-6.18-4.37-3.69,0-6.37,3.44-6.37,7.62Z",
+      blue:   "M16.64,47.76c-6.34,0-10.57-3.44-10.57-8.14,0-5.02,5.76-9.36,10.57-12.48-3.07-3.59-4.7-6.5-4.7-10.1,0-5.97,5.34-10.47,12.69-10.47,6.5,0,11.26,2.59,11.31,6.34.05,4.02-5.23,6.4-10.63,9.25l11.68,12.37c.48-2.43.05-6.4-1-9.36l-2.75-2.91h15.7l-3.01,3.28c-2.01,3.38-5.34,7.14-8.14,9.83l11.15,11.74h-13.59l-4.55-4.86c-4.39,3.33-9.78,5.5-14.17,5.5ZM24.62,21.33c2.22-2.38,3.44-5.44,3.44-8.62s-1.43-5.29-3.44-5.29-3.44,2.22-3.44,5.29,1.22,5.81,3.44,8.62ZM23.98,43.16c2.27,0,4.23-.63,5.97-1.8l-12.53-13.32c-1.22,1.64-1.96,3.96-1.96,6.34,0,5.18,3.49,8.78,8.51,8.78Z",
+      yellow: "M26.23,46.83c-9.23,0-15.37-4.56-15.37-14.06,0-3.94,1.53-7.86,4.21-10.14-1.77-1.45-2.79-3.68-2.79-6.47,0-5.15,3.46-8.67,8.64-8.67h11.96v6.14h-9.71c-2.47,0-3.62,1.15-3.62,2.79,0,1.72,1.15,2.92,3.62,2.92h8.56c.72,0,1.1-.38,1.1-1.1v-2.79h6.98v2.79c0,.72.4,1.1,1.1,1.1h3.25v5.5h-3.25c-.7,0-1.1.38-1.1,1.1v20.87h-13.57ZM18.1,32.61c0,5.04,3.46,8.07,8.69,8.07h4.67c.78,0,1.37-.62,1.37-1.4v-12.96c0-.78-.59-1.37-1.37-1.37h-4.67c-5.23,0-8.69,2.9-8.69,7.65Z",
+      pink:   "M6.02,36.41c0-5.69,4.77-9.12,11.86-9.66v-.48c-4.32-.54-9.63-2.79-9.63-8.96,0-6.55,5.77-10.36,15.54-10.36,5.41,0,11.68,1.5,16.72,3.92-.27,1.61-.23,3.6.05,5.37-5.36-3.27-11.54-5.1-16.58-5.1-7.41,0-11.09,2.79-11.09,6.92,0,4.67,3.77,7.35,13.08,7.35,7.63,0,14.8-.54,20.98-1.07-.27,1.56-.18,3.22.05,4.62-4.86-.48-8.62-1.02-14.84-1.34v.48c6.81,1.29,11.68,3.97,11.68,9.02,0,6.39-7.18,10.31-19.44,10.31-11.49,0-18.35-4.03-18.35-11ZM11.01,35.65c0,4.99,5.13,7.94,13.45,7.94,9.04,0,14.27-2.95,14.27-7.84s-5.32-8.05-14.27-8.05c-8.4,0-13.45,2.95-13.45,7.94Z",
+      red:    "M44.62,42.44c.23.17.34.4.29.74l-.57,4.12c-.06.46-.4.63-.74.34-1.72-1.26-4.3-3.26-7.22-5.56-3.44,3.26-7.62,5.67-12.77,5.67-6.87,0-13.52-3.44-13.52-11.05,0-5.1,3.38-8.25,7.5-10.42-2.63-2.81-4.35-5.73-4.35-9.39,0-4.93,4.18-10.31,11.86-10.31,8.19,0,11.23,5.44,11.23,9.51,0,6.82-6.53,9.22-10.37,11,.86.74,1.72,1.43,2.52,2.06,1.89,1.49,4.41,3.61,6.93,5.67,1.49-1.95,2.58-3.78,3.15-4.87.17-.29.4-.4.69-.34l4.81.52c.4.06.57.29.34.69-1.2,2.35-2.81,5.04-4.7,7.56,2.12,1.78,3.95,3.26,4.93,4.07ZM25.03,11.85c-2.46,0-5.96,1.83-5.96,5.56,0,2.41,1.49,4.64,3.44,6.64,5.04-2,7.96-3.84,7.96-7.39,0-2.92-2.41-4.81-5.44-4.81ZM23.71,42.44c3.09,0,5.9-1.66,8.3-3.84-2.41-2-4.87-4.01-7.1-5.84-1.37-1.15-2.69-2.18-3.89-3.26-2.92,1.6-5.04,3.55-5.04,6.76,0,3.89,3.38,6.19,7.73,6.19Z",
+    };
+    // Cor do & no cabecalho da proposta. Trocar pra blue/yellow/pink/red se quiser.
+    const AMP_COR = "green";
+
+    function Ampersand({ cor = AMP_COR, className = "doc-amp" }) {
+      return (
+        <svg className={className} viewBox="0 0 55 55" aria-hidden="true"
+             style={{ color: "var(--rp-" + cor + ")" }}>
+          <path fill="currentColor" d={AMPERSANDS[cor]} />
+        </svg>
+      );
+    }
+
     const DADOS_FIXOS = {
-      nome: "miligrama design",
+      nome: "rodrigo gondim.",
       endereco: "rua caraíbas, 1335",
       cidade: "são paulo, sp",
       telefone: "+55 85 98615.1263",
@@ -307,7 +351,7 @@
     };
 
     // ===== Conteudo fixo da proposta =====
-    // Reproduz a abertura do modelo impresso da miligrama (proposta 098/2022).
+    // Estrutura herdada do modelo impresso da miligrama (proposta 098/2022).
     // Editar aqui muda em todas as propostas geradas dali em diante.
     // Texto de apresentacao do rgondim.com.br (pagina About), vertido pro
     // portugues porque a proposta inteira e em PT. O original em ingles esta
@@ -338,19 +382,19 @@
     // "passos" sao as posicoes preenchidas na trilha de 10 marcos do diagrama.
     const METODO_PASSOS = 10;
     const METODOLOGIA = [
-      { letra: "A", nome: "briefing", passos: [1],
+      { letra: "A", cor: "green", nome: "briefing", passos: [1],
         titulo: "Anotando o pedido.",
         texto: "Através de um questionário de informações básicas, definimos o problema e apresentamos uma proposta comercial." },
-      { letra: "B", nome: "pesquisa", passos: [2, 3, 4, 5],
+      { letra: "B", cor: "blue", nome: "pesquisa", passos: [2, 3, 4, 5],
         titulo: "Escolhendo os ingredientes.",
         texto: "Nos aprofundamos no problema, analisando também a concorrência, o perfil do público-alvo e as referências estéticas para o projeto. Através de workshops e questionário com público interno e externo." },
-      { letra: "C", nome: "conceituação", passos: [6, 7],
+      { letra: "C", cor: "yellow", nome: "conceituação", passos: [6, 7],
         titulo: "Mise en plas.",
         texto: "Organizamos os resultados da pesquisa, definindo o conceito e o objetivo do projeto." },
-      { letra: "D", nome: "criação", passos: [8, 9],
+      { letra: "D", cor: "pink", nome: "criação", passos: [8, 9],
         titulo: "Mão na massa.",
         texto: "Tornamos real e visual todo o planejamento, escolhendo formas, cores, tipografias e materiais a serem utilizados." },
-      { letra: "E", nome: "implementação", passos: [10],
+      { letra: "E", cor: "red", nome: "implementação", passos: [10],
         titulo: "Servindo.",
         texto: "Acompanhamos a produção de todos os materiais definidos no projeto, da escolha do fornecedor à entrega." },
     ];
@@ -536,7 +580,7 @@
           <header className="header">
             <div>
               <h1>Gerador de Orçamentos</h1>
-              <p className="subtitulo">miligrama design</p>
+              <p className="subtitulo">rodrigo gondim</p>
             </div>
             <div className="header-right">
               <div className="contador-box">
@@ -724,7 +768,10 @@
         <div className="pagina">
           <header className="doc-cabecalho">
             <div>
-              <div className="doc-logo">{DADOS_FIXOS.nome}</div>
+              <div className="doc-marca">
+                <Ampersand />
+                <span className="doc-logo">{DADOS_FIXOS.nome}</span>
+              </div>
               <div className="doc-endereco">{DADOS_FIXOS.endereco}<br />{DADOS_FIXOS.cidade}</div>
               <div className="doc-contato">T {DADOS_FIXOS.telefone}<br />{DADOS_FIXOS.email}</div>
             </div>
@@ -736,7 +783,7 @@
           </header>
 
           <section className="doc-secao">
-            <div className="doc-secao-label">apresentação</div>
+            <div className="doc-secao-label doc-secao-label--green">apresentação</div>
             <div className="doc-cliente-nome">{cliente || "—"}</div>
             <p className="doc-apresentacao-txt">{apresentacao}</p>
           </section>
@@ -746,7 +793,7 @@
               {BIO.map((paragrafo, i) => <p key={i}>{paragrafo}</p>)}
             </div>
 
-            <div className="doc-secao-label">principais premiações</div>
+            <div className="doc-secao-label doc-secao-label--blue">principais premiações</div>
             <div className="doc-premiacoes">
               {PREMIACOES.map((premio, i) => (
                 <div key={i} className="doc-premiacao">{premio}</div>
@@ -754,11 +801,11 @@
             </div>
 
             <div className="doc-metodologia">
-              <div className="doc-secao-label">metodologia sem receita</div>
+              <div className="doc-secao-label doc-secao-label--yellow">metodologia sem receita</div>
 
               <div className="doc-metodo-grade">
                 {METODOLOGIA.map((fase) => (
-                  <div key={fase.letra} className="doc-metodo-linha">
+                  <div key={fase.letra} className="doc-metodo-linha" style={{ "--fase": "var(--rp-" + fase.cor + ")" }}>
                     <span className="doc-metodo-nome"><b>{fase.letra}.</b> {fase.nome}</span>
                     <span className="doc-metodo-trilha">
                       {Array.from({ length: METODO_PASSOS }, (_, i) => (
@@ -773,7 +820,7 @@
 
               <div className="doc-metodo-etapas">
                 {METODOLOGIA.map((fase) => (
-                  <div key={fase.letra} className="doc-metodo-etapa">
+                  <div key={fase.letra} className="doc-metodo-etapa" style={{ "--fase": "var(--rp-" + fase.cor + ")" }}>
                     <span className="doc-metodo-letra">{fase.letra}</span>
                     <p className="doc-metodo-txt">
                       <strong>{fase.titulo}</strong> {fase.texto}
@@ -808,7 +855,7 @@
           ))}
 
           <section className="doc-secao">
-            <div className="doc-secao-label">cronograma</div>
+            <div className="doc-secao-label doc-secao-label--pink">cronograma</div>
             <div className="doc-cronograma-intro">
               O cronograma pode sofrer alterações de acordo com a necessidade, pacote escolhido e prazo do cliente, podendo ocasionar custos extras para prazos emergenciais.
             </div>
@@ -823,7 +870,7 @@
           </section>
 
           <section className="doc-observacoes">
-            <div className="doc-secao-label">observações importantes</div>
+            <div className="doc-secao-label doc-secao-label--red">observações importantes</div>
             <div className="doc-obs-bloco">
               <strong className="doc-obs-titulo">acompanhamento gráfico</strong>
               <p className="doc-obs-txt">
