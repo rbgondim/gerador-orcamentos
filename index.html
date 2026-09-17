@@ -111,7 +111,7 @@
     .btn-link:hover { color: var(--rp-white); opacity: 1; }
 
     /* ---- Histórico, edição e link ---- */
-    .container-doc { padding-top: 0; padding-bottom: 56px; }
+    .container-doc { padding-top: 0; padding-bottom: 56px; min-height: 0; }
     .historico-acoes { display: flex; gap: 14px; justify-content: flex-end; white-space: nowrap; }
     .btn-linha { border: none; background: none; color: var(--rp-gray); font-size: 12.5px; text-decoration: underline; text-underline-offset: 3px; padding: 0; }
     .btn-linha:hover { color: var(--rp-white); opacity: 1; }
@@ -131,7 +131,10 @@
     .link-box-linha input { font-size: 13px; }
     .link-box-obs { font-size: 12px; color: var(--rp-gray); margin: 10px 0 0 0; line-height: 1.5; }
 
-    .barra-compartilhada { display: flex; justify-content: flex-end; padding-top: 28px; padding-bottom: 20px; }
+    /* .container tem min-height: 100vh. Como esta barra e um .container e vira
+       flex, o align-items: stretch padrao esticava o botao pela altura da tela
+       inteira. Dai o min-height: 0 e o align-items. */
+    .barra-compartilhada { display: flex; justify-content: flex-end; align-items: flex-start; min-height: 0; padding-top: 28px; padding-bottom: 18px; }
 
     /* ---- Templates de projeto ---- */
     .templates { margin-bottom: 42px; }
