@@ -83,6 +83,28 @@
     .doc-secao-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2.8px; color: #999; font-family: 'JetBrains Mono', monospace; margin-bottom: 10px; }
     .doc-cliente-nome { font-size: 28px; font-style: italic; font-weight: 400; margin-bottom: 10px; letter-spacing: -0.5px; line-height: 1.1; }
     .doc-apresentacao-txt { font-size: 12.5px; line-height: 1.6; color: #333; margin: 0; max-width: 82%; }
+    /* Bloco fixo: manifesto, premiacoes e metodologia */
+    .doc-manifesto { font-size: 11.5px; line-height: 1.7; color: #333; max-width: 84%; margin: 0 0 30px 0; }
+    .doc-premiacoes { columns: 2; column-gap: 34px; font-size: 10.5px; line-height: 1.85; color: #333; margin-bottom: 34px; }
+    .doc-premiacao { break-inside: avoid; }
+    .doc-metodologia { break-inside: avoid; page-break-inside: avoid; }
+    .doc-metodo-grade { margin-bottom: 24px; }
+    .doc-metodo-linha { display: grid; grid-template-columns: 118px 1fr; align-items: center; gap: 16px; margin-bottom: 9px; }
+    .doc-metodo-nome { font-size: 10px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.4px; color: #1a1a1a; }
+    .doc-metodo-nome b { font-weight: 500; }
+    .doc-metodo-trilha { display: grid; grid-template-columns: repeat(10, 1fr); align-items: center; }
+    .doc-metodo-passo { position: relative; display: flex; justify-content: center; align-items: center; height: 10px; }
+    .doc-metodo-passo::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #1a1a1a; }
+    .doc-metodo-passo:first-child::before { left: 50%; }
+    .doc-metodo-passo:last-child::before { right: 50%; }
+    .doc-metodo-quadro { position: relative; width: 8px; height: 8px; border: 1px solid #1a1a1a; background: #fff; }
+    .doc-metodo-quadro.ativo { background: #1a1a1a; }
+    /* fluxo por coluna: A,B,C na esquerda e D,E na direita, como no modelo impresso */
+    .doc-metodo-etapas { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, auto); grid-auto-flow: column; gap: 14px 34px; }
+    .doc-metodo-etapa { display: grid; grid-template-columns: 16px 1fr; gap: 10px; break-inside: avoid; }
+    .doc-metodo-letra { width: 16px; height: 16px; border: 1px solid #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: 8.5px; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+    .doc-metodo-txt { font-size: 10px; line-height: 1.55; color: #444; margin: 0; }
+    .doc-metodo-txt strong { font-weight: 500; color: #1a1a1a; }
     .doc-servico { padding-top: 22px; padding-bottom: 22px; border-top: 1px solid #1a1a1a; }
     .doc-servico-header { display: grid; grid-template-columns: 32px 1fr auto auto; gap: 18px; align-items: baseline; margin-bottom: 10px; }
     .doc-servico-num { font-size: 10px; color: #999; font-family: 'JetBrains Mono', monospace; letter-spacing: 1.5px; }
@@ -209,6 +231,49 @@
       telefone: "+55 85 98615.1263",
       email: "rodrigomiligrama@gmail.com",
     };
+
+    // ===== Conteudo fixo da proposta =====
+    // Reproduz a abertura do modelo impresso da miligrama (proposta 098/2022).
+    // Editar aqui muda em todas as propostas geradas dali em diante.
+    const MANIFESTO =
+      "Nós não lemos receita. O design é uma ferramenta que permite que marcas e pessoas " +
+      "possam se expressar. Por isso nosso design é autoral, mas não é assinado. Não nos " +
+      "damos bem com menu de congelados. Cada projeto, cada prato servido, é criado com os " +
+      "ingredientes que você nos oferece, pensados exclusivamente para saciar a sua fome. " +
+      "A única constante é o nosso tempero, a nossa forma de fazer e nossa metodologia. " +
+      "As miligramas que levam seu projeto de um almoço despretensioso para um prato " +
+      "3 estrelas Michelin.";
+
+    const PREMIACOES = [
+      "Bienal Iberoamericana de Diseño – Madrid (2020)",
+      "Brasil Design Awards (2018–2019–2020–2021)",
+      "Bienal Brasileira de Design Gráfico – ADG (2017–2019)",
+      "Finalista no Latin America Design Award (2018)",
+      "Bienal Brasileira de Design (2015)",
+      "Prêmio Bornancini de Design (2020)",
+      "Prêmio Profissionais do Ano (Rede Globo – 2017)",
+      "Melhor Comercial Regional do Brasil (SBT – 2017)",
+    ];
+
+    // "passos" sao as posicoes preenchidas na trilha de 10 marcos do diagrama.
+    const METODO_PASSOS = 10;
+    const METODOLOGIA = [
+      { letra: "A", nome: "briefing", passos: [1],
+        titulo: "Anotando o pedido.",
+        texto: "Através de um questionário de informações básicas, definimos o problema e apresentamos uma proposta comercial." },
+      { letra: "B", nome: "pesquisa", passos: [2, 3, 4, 5],
+        titulo: "Escolhendo os ingredientes.",
+        texto: "Nos aprofundamos no problema, analisando também a concorrência, o perfil do público-alvo e as referências estéticas para o projeto. Através de workshops e questionário com público interno e externo." },
+      { letra: "C", nome: "conceituação", passos: [6, 7],
+        titulo: "Mise en plas.",
+        texto: "Organizamos os resultados da pesquisa, definindo o conceito e o objetivo do projeto." },
+      { letra: "D", nome: "criação", passos: [8, 9],
+        titulo: "Mão na massa.",
+        texto: "Tornamos real e visual todo o planejamento, escolhendo formas, cores, tipografias e materiais a serem utilizados." },
+      { letra: "E", nome: "implementação", passos: [10],
+        titulo: "Servindo.",
+        texto: "Acompanhamos a produção de todos os materiais definidos no projeto, da escolha do fornecedor à entrega." },
+    ];
 
     function formatarValor(n) {
       if (!n && n !== 0) return "R$ 0,00";
@@ -594,6 +659,47 @@
             <div className="doc-secao-label">apresentação</div>
             <div className="doc-cliente-nome">{cliente || "—"}</div>
             <p className="doc-apresentacao-txt">{apresentacao}</p>
+          </section>
+
+          <section className="doc-secao">
+            <p className="doc-manifesto">{MANIFESTO}</p>
+
+            <div className="doc-secao-label">principais premiações</div>
+            <div className="doc-premiacoes">
+              {PREMIACOES.map((premio, i) => (
+                <div key={i} className="doc-premiacao">{premio}</div>
+              ))}
+            </div>
+
+            <div className="doc-metodologia">
+              <div className="doc-secao-label">metodologia sem receita</div>
+
+              <div className="doc-metodo-grade">
+                {METODOLOGIA.map((fase) => (
+                  <div key={fase.letra} className="doc-metodo-linha">
+                    <span className="doc-metodo-nome"><b>{fase.letra}.</b> {fase.nome}</span>
+                    <span className="doc-metodo-trilha">
+                      {Array.from({ length: METODO_PASSOS }, (_, i) => (
+                        <span key={i} className="doc-metodo-passo">
+                          <span className={"doc-metodo-quadro" + (fase.passos.includes(i + 1) ? " ativo" : "")} />
+                        </span>
+                      ))}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="doc-metodo-etapas">
+                {METODOLOGIA.map((fase) => (
+                  <div key={fase.letra} className="doc-metodo-etapa">
+                    <span className="doc-metodo-letra">{fase.letra}</span>
+                    <p className="doc-metodo-txt">
+                      <strong>{fase.titulo}</strong> {fase.texto}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
 
           {servicos.map((sv, i) => (
