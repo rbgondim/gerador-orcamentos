@@ -533,12 +533,17 @@
       },
     };
 
-    // A moeda segue em BRL nos dois idiomas — o que muda e a convencao de
-    // separadores: R$ 1.500,00 em portugues, R$ 1,500.00 em ingles.
+    // A moeda acompanha o idioma: proposta em portugues cobra em real,
+    // proposta em ingles cobra em dolar. ATENCAO: isso NAO converte cambio —
+    // o numero digitado e o numero cobrado. Trocar o idioma de uma proposta ja
+    // preenchida nao reajusta valor nenhum, so troca o simbolo.
+    const MOEDA = { pt: { loc: "pt-BR", cur: "BRL", rotulo: "R$" },
+                    en: { loc: "en-US", cur: "USD", rotulo: "US$" } };
+
     function formatarValor(n, idioma = "pt") {
-      const loc = idioma === "en" ? "en-US" : "pt-BR";
+      const m = MOEDA[idioma] || MOEDA.pt;
       const v = (!n && n !== 0) ? 0 : n;
-      return new Intl.NumberFormat(loc, { style: "currency", currency: "BRL" }).format(v);
+      return new Intl.NumberFormat(m.loc, { style: "currency", currency: m.cur }).format(v);
     }
 
     function formatarData(d = new Date(), idioma = "pt") {
@@ -772,6 +777,23 @@
         novo[sIdx].itens = novo[sIdx].itens.filter((_, i) => i !== iIdx);
         setServicos(novo);
       }
+      // Trocar o idioma troca a MOEDA, e nao ha conversao de cambio: o numero
+      // digitado continua o mesmo. R$ 15.000 viraria US$ 15,000 — cerca de
+      // cinco vezes o preco — sem nenhum aviso. Dai a confirmacao.
+      function trocarIdioma(novo) {
+        if (novo === idioma) return;
+        const temValor = servicos.some((sv) => parseFloat(sv.valor) > 0);
+        if (temValor) {
+          const de = MOEDA[idioma].rotulo, para = MOEDA[novo].rotulo;
+          const ok = window.confirm(
+            `Os valores passam de ${de} para ${para} SEM conversão de câmbio — ` +
+            `o número digitado continua o mesmo, só o símbolo muda.\n\n` +
+            `Confira os valores depois de trocar. Continuar?`);
+          if (!ok) return;
+        }
+        setIdioma(novo);
+      }
+
       function adicionarServico() { setServicos([...servicos, criarServicoVazio()]); }
 
       function aplicarTemplate(servico, etapas) {
@@ -950,7 +972,7 @@
                 {["pt", "en"].map((i) => (
                   <button key={i}
                           className={"btn-idioma" + (idioma === i ? " is-ativo" : "")}
-                          onClick={() => setIdioma(i)}>
+                          onClick={() => trocarIdioma(i)}>
                     {i.toUpperCase()}
                   </button>
                 ))}
@@ -1023,7 +1045,7 @@
 
                 <div className="linha-campos">
                   <div>
-                    <label>valor (R$)</label>
+                    <label>valor ({MOEDA[idioma].rotulo})</label>
                     <input type="number" step="0.01" value={sv.valor} onChange={(e) => atualizarServico(sIdx, "valor", e.target.value)} placeholder="8000" />
                   </div>
                   <div>
@@ -1179,7 +1201,7 @@
                   <tr key={p.id}>
                     <td><code style={{ fontSize: 13, letterSpacing: "0.04em" }}>{p.numero_proposta}</code></td>
                     <td>{p.cliente}</td>
-                    <td style={{ fontSize: 14, fontWeight: 500 }}>{formatarValor(p.valor_total)}</td>
+                    <td style={{ fontSize: 14, fontWeight: 500 }}>{formatarValor(p.valor_total, p.idioma || "pt")}</td>
                     <td style={{ color: "var(--rp-gray)", fontSize: 13 }}>
                       {new Date(p.criado_em).toLocaleDateString("pt-BR")}
                     </td>
@@ -1410,7 +1432,7 @@
                     <div key={i} className="template-ref">
                       <span>{r.cliente} · {r.ano}</span>
                       <span>{r.modulos} itens · {r.dias}d</span>
-                      <span className="template-ref-valor">{formatarValor(r.valor)}</span>
+                      <span className="template-ref-valor">{formatarValor(r.valor, "pt")}</span>
                     </div>
                   ))}
                   <p className="template-refs-obs">
