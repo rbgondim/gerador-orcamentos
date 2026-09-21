@@ -19,6 +19,7 @@ create table if not exists public.propostas_geradas (
   cronograma      jsonb       not null default '[]'::jsonb,
   validade_dias   int         not null default 30,
   valor_total     numeric(12,2) not null default 0,
+  idioma          text        not null default 'pt',
   criado_em       timestamptz not null default now()
 );
 

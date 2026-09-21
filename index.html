@@ -136,6 +136,12 @@
        inteira. Dai o min-height: 0 e o align-items. */
     .barra-compartilhada { display: flex; justify-content: flex-end; align-items: flex-start; min-height: 0; padding-top: 28px; padding-bottom: 18px; }
 
+    .seletor-idioma { display: flex; gap: 4px; padding-right: 18px; border-right: 1px solid var(--linha); }
+    .btn-idioma { border: 1px solid var(--linha); background: transparent; color: var(--rp-gray); border-radius: 999px; padding: 4px 11px; font-size: 11px; letter-spacing: 0.08em; }
+    .btn-idioma.is-ativo { background: var(--rp-white); border-color: var(--rp-white); color: var(--rp-black); opacity: 1; }
+    .btn-idioma:hover { color: var(--rp-white); opacity: 1; }
+    .btn-idioma.is-ativo:hover { color: var(--rp-black); }
+
     /* ---- Templates de projeto ---- */
     .templates { margin-bottom: 42px; }
     .templates-linha { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -417,64 +423,132 @@
     // Texto de apresentacao do rgondim.com.br (pagina About), vertido pro
     // portugues porque a proposta inteira e em PT. O original em ingles esta
     // em https://rgondim.com.br/about/ — trocar aqui se preferir a versao de la.
-    const BIO = [
-      "Sou um designer gráfico brasileiro com mais de 15 anos de experiência e uma lista " +
-      "razoavelmente longa de prêmios — quem é que não gosta deles —, tanto como cofundador " +
-      "e diretor de criação de um estúdio, a miligrama, quanto, atualmente, como Design Manager " +
-      "na Tátil Design, a 6ª melhor agência de design do mundo segundo o D&AD, com escritórios " +
-      "no Rio de Janeiro, em São Paulo e em Londres.",
+    // PT vertido do About; EN e o original do site, com os erros de digitacao
+    // corrigidos ("brazillian", "pretty long list", "according D&AD").
+    const BIO = {
+      pt: [
+        "Sou um designer gráfico brasileiro com mais de 15 anos de experiência e uma lista " +
+        "razoavelmente longa de prêmios — quem é que não gosta deles —, tanto como cofundador " +
+        "e diretor de criação de um estúdio, a miligrama, quanto, atualmente, como Design Manager " +
+        "na Tátil Design, a 6ª melhor agência de design do mundo segundo o D&AD, com escritórios " +
+        "no Rio de Janeiro, em São Paulo e em Londres.",
+        "A cada dois anos, mais ou menos, me envolvo obsessivamente com algum ofício específico " +
+        "do design: design editorial (sobre o qual ainda dou aula), design de tipos, metodologia " +
+        "criativa e, mais recentemente, modelagem e animação 3D.",
+      ],
+      en: [
+        "I'm a Brazilian graphic designer with more than 15 years of experience and a pretty long " +
+        "list of awards — who doesn't love them — both as co-founder and creative director of a " +
+        "studio, miligrama, and currently as Design Manager at Tátil Design, the 6th best design " +
+        "agency in the world according to D&AD, with offices in Rio de Janeiro, São Paulo and London.",
+        "Every couple of years I get obsessively engaged in one specific design craft: editorial " +
+        "design (which I still teach), type design, creative methodology and, most recently, " +
+        "3D modelling and animation.",
+      ],
+    };
 
-      "A cada dois anos, mais ou menos, me envolvo obsessivamente com algum ofício específico " +
-      "do design: design editorial (sobre o qual ainda dou aula), design de tipos, metodologia " +
-      "criativa e, mais recentemente, modelagem e animação 3D.",
-    ];
-
-    // Lista de premios da pagina About do rgondim.com.br (set/2026).
-    // Os termos genericos vao em PT porque a proposta e em PT; nomes
-    // proprios (D&AD, Wood Pencil, Bienal ADG, iF Awards) ficam como sao.
     const PREMIACOES = [
-      { titulo: "D&AD",                     detalhe: "Wood Pencil · Natura Naturé" },
-      { titulo: "Brasil Design Awards 2025", detalhe: "1 prata, 1 bronze" },
-      { titulo: "14ª Bienal ADG",           detalhe: "6 trabalhos selecionados · destaque para Natura Naturé" },
-      { titulo: "iF Awards 2024",           detalhe: "Bauducco One Brand" },
-      { titulo: "Brasil Design Awards 2024", detalhe: "2 ouro, 2 prata" },
-      { titulo: "Brasil Design Awards 2023", detalhe: "1 prata, 2 bronze" },
-      { titulo: "Prêmio Bornancini 2020",   detalhe: "2 ouro, 1 prata" },
-      { titulo: "Brasil Design Awards 2021", detalhe: "1 bronze" },
-      { titulo: "Brasil Design Awards 2020", detalhe: "1 bronze" },
-      { titulo: "13ª Bienal ADG",           detalhe: "3 trabalhos selecionados · destaque para Tipo Café" },
-      { titulo: "Brasil Design Awards 2019", detalhe: "3 bronze" },
-      { titulo: "Brasil Design Awards 2018", detalhe: "5 bronze" },
-      { titulo: "12ª Bienal ADG",           detalhe: "3 trabalhos selecionados" },
+      { titulo: "D&AD",                     detalhe: { pt: "Wood Pencil · Natura Naturé", en: "Wood Pencil · Natura Naturé" } },
+      { titulo: "Brasil Design Awards 2025", detalhe: { pt: "1 prata, 1 bronze", en: "1 Silver, 1 Bronze" } },
+      { titulo: { pt: "14ª Bienal ADG", en: "14th ADG Biennial" },           detalhe: { pt: "6 trabalhos selecionados · destaque para Natura Naturé", en: "6 Selected Works · Project Highlight: Natura Naturé" } },
+      { titulo: "iF Awards 2024",           detalhe: { pt: "Bauducco One Brand", en: "Bauducco One Brand" } },
+      { titulo: "Brasil Design Awards 2024", detalhe: { pt: "2 ouro, 2 prata", en: "2 Gold, 2 Silver" } },
+      { titulo: "Brasil Design Awards 2023", detalhe: { pt: "1 prata, 2 bronze", en: "1 Silver, 2 Bronze" } },
+      { titulo: { pt: "Prêmio Bornancini 2020", en: "Bornancini Award 2020" },   detalhe: { pt: "2 ouro, 1 prata", en: "2 Gold, 1 Silver" } },
+      { titulo: "Brasil Design Awards 2021", detalhe: { pt: "1 bronze", en: "1 Bronze" } },
+      { titulo: "Brasil Design Awards 2020", detalhe: { pt: "1 bronze", en: "1 Bronze" } },
+      { titulo: { pt: "13ª Bienal ADG", en: "13th ADG Biennial" },           detalhe: { pt: "3 trabalhos selecionados · destaque para Tipo Café", en: "3 Selected Works · Project Highlight: Tipo Café" } },
+      { titulo: "Brasil Design Awards 2019", detalhe: { pt: "3 bronze", en: "3 Bronze" } },
+      { titulo: "Brasil Design Awards 2018", detalhe: { pt: "5 bronze", en: "5 Bronze" } },
+      { titulo: { pt: "12ª Bienal ADG", en: "12th ADG Biennial" },           detalhe: { pt: "3 trabalhos selecionados", en: "3 Selected Works" } },
     ];
 
     // "passos" sao as posicoes preenchidas na trilha de 10 marcos do diagrama.
     const METODO_PASSOS = 10;
     const METODOLOGIA = [
-      { letra: "A", cor: "green", nome: "briefing", passos: [1],
-        titulo: "Anotando o pedido.",
-        texto: "Através de um questionário de informações básicas, definimos o problema e apresentamos uma proposta comercial." },
-      { letra: "B", cor: "blue", nome: "pesquisa", passos: [2, 3, 4, 5],
-        titulo: "Escolhendo os ingredientes.",
-        texto: "Nos aprofundamos no problema, analisando também a concorrência, o perfil do público-alvo e as referências estéticas para o projeto. Através de workshops e questionário com público interno e externo." },
-      { letra: "C", cor: "yellow", nome: "conceituação", passos: [6, 7],
-        titulo: "Mise en plas.",
-        texto: "Organizamos os resultados da pesquisa, definindo o conceito e o objetivo do projeto." },
-      { letra: "D", cor: "pink", nome: "criação", passos: [8, 9],
-        titulo: "Mão na massa.",
-        texto: "Tornamos real e visual todo o planejamento, escolhendo formas, cores, tipografias e materiais a serem utilizados." },
-      { letra: "E", cor: "red", nome: "implementação", passos: [10],
-        titulo: "Servindo.",
-        texto: "Acompanhamos a produção de todos os materiais definidos no projeto, da escolha do fornecedor à entrega." },
+      { letra: "A", cor: "green", nome: { pt: "briefing", en: "briefing" }, passos: [1],
+        titulo: { pt: "Anotando o pedido.", en: "Taking the order." },
+        texto: { pt: "Através de um questionário de informações básicas, definimos o problema e apresentamos uma proposta comercial.",
+                 en: "Through a questionnaire of basic information, we define the problem and present a commercial proposal." } },
+      { letra: "B", cor: "blue", nome: { pt: "pesquisa", en: "research" }, passos: [2, 3, 4, 5],
+        titulo: { pt: "Escolhendo os ingredientes.", en: "Choosing the ingredients." },
+        texto: { pt: "Nos aprofundamos no problema, analisando também a concorrência, o perfil do público-alvo e as referências estéticas para o projeto. Através de workshops e questionário com público interno e externo.",
+                 en: "We dig into the problem, looking at the competition, the target audience and the aesthetic references for the project, through workshops and a questionnaire with internal and external audiences." } },
+      { letra: "C", cor: "yellow", nome: { pt: "conceituação", en: "conceptualisation" }, passos: [6, 7],
+        titulo: { pt: "Mise en place.", en: "Mise en place." },
+        texto: { pt: "Organizamos os resultados da pesquisa, definindo o conceito e o objetivo do projeto.",
+                 en: "We organise the research findings, defining the concept and the objective of the project." } },
+      { letra: "D", cor: "pink", nome: { pt: "criação", en: "creation" }, passos: [8, 9],
+        titulo: { pt: "Mão na massa.", en: "Hands on." },
+        texto: { pt: "Tornamos real e visual todo o planejamento, escolhendo formas, cores, tipografias e materiais a serem utilizados.",
+                 en: "We turn the whole plan into something real and visual, choosing shapes, colours, typography and materials." } },
+      { letra: "E", cor: "red", nome: { pt: "implementação", en: "implementation" }, passos: [10],
+        titulo: { pt: "Servindo.", en: "Serving." },
+        texto: { pt: "Acompanhamos a produção de todos os materiais definidos no projeto, da escolha do fornecedor à entrega.",
+                 en: "We follow the production of every material defined in the project, from choosing the supplier through to delivery." } },
     ];
 
-    function formatarValor(n) {
-      if (!n && n !== 0) return "R$ 0,00";
-      return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(n);
+    // ===================================================================
+    // Idiomas
+    // ===================================================================
+    // tx() aceita tanto {pt, en} quanto string solta — assim valores que nao
+    // mudam de idioma (numeros, nomes proprios) ficam como estao.
+    function tx(v, idioma) {
+      if (v && typeof v === "object" && !Array.isArray(v)) return v[idioma] != null ? v[idioma] : v.pt;
+      return v;
     }
 
-    function formatarData(d = new Date()) {
-      const meses = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+    const T = {
+      pt: {
+        proposta: "proposta", numeroPrefixo: "nº", para: "para",
+        apresentacao: "apresentação", premiacoes: "principais premiações",
+        metodologia: "metodologia sem receita", cronograma: "cronograma",
+        observacoes: "observações importantes",
+        cronogramaIntro: "O cronograma pode sofrer alterações de acordo com a necessidade, pacote escolhido e prazo do cliente, podendo ocasionar custos extras para prazos emergenciais.",
+        obsAcompanhamento: "acompanhamento gráfico",
+        obsAcompanhamentoTxt: "O percentual de acompanhamento gráfico é de 15% sobre o valor dos serviços dos fornecedores. Serve para que o cliente tenha suporte técnico especializado durante a produção em gráfica. A responsabilidade técnica da empresa de design ocorre somente até a aprovação da prova digital. Serviço opcional, mas de grande importância.",
+        obsUrgencia: "taxa de urgência",
+        obsUrgenciaTxt: "Ocorre quando os prazos para criação/editoração/layout são menores do que os habituais, ou quando o serviço demanda horas extras ou contratação extraordinária de profissionais.",
+        obsValidade: "validade da proposta",
+        obsValidadeTxt: (d) => `Esta proposta é válida por ${d} dias a partir da data de emissão. Após esse período, os valores e prazos podem ser reajustados.`,
+        obsGerais: "disposições gerais",
+        obsGeraisTxt: "Não estão inclusos: produção de conteúdo (textos, imagens), custos de impressão, distribuição, produção fotográfica e provas gráficas. Prazos contados a partir do primeiro pagamento. Mudanças conceituais no briefing após aprovação acarretam custos adicionais. Este orçamento engloba 1 (uma) alteração de layout. Arquivos digitais passam a ser propriedade do Cliente somente após o pagamento final.",
+        diasUteis: "dias úteis",
+      },
+      en: {
+        proposta: "proposal", numeroPrefixo: "no.", para: "to",
+        apresentacao: "about", premiacoes: "selected awards",
+        metodologia: "no-recipe methodology", cronograma: "timeline",
+        observacoes: "important notes",
+        cronogramaIntro: "The timeline may shift according to the needs of the project, the package chosen and the client's own schedule. Emergency turnarounds may incur extra costs.",
+        obsAcompanhamento: "print supervision",
+        obsAcompanhamentoTxt: "Print supervision is charged at 15% of the value of the suppliers' services. It gives the client specialised technical support during production at the printer. The design studio's technical responsibility ends at the approval of the digital proof. Optional, but strongly recommended.",
+        obsUrgencia: "rush fee",
+        obsUrgenciaTxt: "Applies when the deadlines for creation, layout or artwork are shorter than usual, or when the job requires overtime or bringing in additional professionals.",
+        obsValidade: "proposal validity",
+        obsValidadeTxt: (d) => `This proposal is valid for ${d} days from the date of issue. After that, prices and deadlines may be revised.`,
+        obsGerais: "general provisions",
+        obsGeraisTxt: "Not included: content production (copy, images), printing, distribution, photography and press proofs. Deadlines start from the first payment. Conceptual changes to the brief after approval incur additional costs. This quote covers 1 (one) round of layout changes. Digital files become the Client's property only after final payment.",
+        diasUteis: "working days",
+      },
+    };
+
+    // A moeda segue em BRL nos dois idiomas — o que muda e a convencao de
+    // separadores: R$ 1.500,00 em portugues, R$ 1,500.00 em ingles.
+    function formatarValor(n, idioma = "pt") {
+      const loc = idioma === "en" ? "en-US" : "pt-BR";
+      const v = (!n && n !== 0) ? 0 : n;
+      return new Intl.NumberFormat(loc, { style: "currency", currency: "BRL" }).format(v);
+    }
+
+    function formatarData(d = new Date(), idioma = "pt") {
+      if (idioma === "en") {
+        const meses = ["january","february","march","april","may","june",
+                       "july","august","september","october","november","december"];
+        return `são paulo, ${meses[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+      }
+      const meses = ["janeiro","fevereiro","março","abril","maio","junho",
+                     "julho","agosto","setembro","outubro","novembro","dezembro"];
       return `são paulo, ${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
     }
 
@@ -502,33 +576,33 @@
       {
         id: "identidade",
         nome: "Design de Identidade",
-        tituloPadrao: "Design de Identidade",
-        descricao: "utilizaremos a metodologia sem receita na criação de marcas, com documentação de todo o material produzido entregue de forma digital no final do projeto.",
+        tituloPadrao: { pt: "Design de Identidade", en: "Identity Design" },
+        descricao: { pt: "utilizaremos a metodologia sem receita na criação de marcas, com documentação de todo o material produzido entregue de forma digital no final do projeto.", en: "we use our no-recipe methodology for brand creation, with documentation of everything produced delivered digitally at the end of the project." },
         modulos: [
-          { id: "estrategia", rotulo: "estratégia", dias: 10, padrao: true,
-            conteudo: "ingredientes da marca, arquétipos, personalidade e pilares da marca",
-            etapa: "Apresentação de Pesquisa/Conceito" },
-          { id: "designstory", rotulo: "conceito & design story", dias: 10, padrao: true,
-            conteudo: "criação de caminhos conceituais que servem de direção criativa para as etapas seguintes — tom de voz, manifesto e linguagem fotográfica",
-            etapa: "Apresentação de Design Story (após aprovação da Pesquisa/Conceito)" },
-          { id: "identidade", rotulo: "identidade visual", dias: 12, padrao: true, obrigatorio: true,
-            conteudo: "marca, escolha tipográfica, ilustrações/grafismos e cores institucionais",
+          { id: "estrategia", rotulo: { pt: "estratégia", en: "strategy" }, dias: 10, padrao: true,
+            conteudo: { pt: "ingredientes da marca, arquétipos, personalidade e pilares da marca", en: "brand ingredients, archetypes, personality and brand pillars" },
+            etapa: { pt: "Apresentação de Pesquisa/Conceito", en: "Research/Concept presentation" } },
+          { id: "designstory", rotulo: { pt: "conceito & design story", en: "concept & design story" }, dias: 10, padrao: true,
+            conteudo: { pt: "criação de caminhos conceituais que servem de direção criativa para as etapas seguintes — tom de voz, manifesto e linguagem fotográfica", en: "conceptual directions that set the creative direction for the stages that follow — tone of voice, manifesto and photographic language" },
+            etapa: { pt: "Apresentação de Design Story (após aprovação da Pesquisa/Conceito)", en: "Design Story presentation (after Research/Concept approval)" } },
+          { id: "identidade", rotulo: { pt: "identidade visual", en: "visual identity" }, dias: 12, padrao: true, obrigatorio: true,
+            conteudo: { pt: "marca, escolha tipográfica, ilustrações/grafismos e cores institucionais", en: "logo, typeface selection, illustrations/graphic elements and brand colours" },
+            etapa: { pt: "Apresentação do Design de Identidade (após aprovação)", en: "Identity Design presentation (after approval)" } },
+          { id: "brandbook", rotulo: { pt: "brandbook", en: "brandbook" }, dias: 3, padrao: true,
+            conteudo: { pt: "material guia com as regras de uso e aplicações da identidade", en: "guidelines covering the rules of use and applications of the identity" },
             etapa: "Apresentação do Design de Identidade (após aprovação)" },
-          { id: "brandbook", rotulo: "brandbook", dias: 3, padrao: true,
-            conteudo: "material guia com as regras de uso e aplicações da identidade",
-            etapa: "Apresentação do Design de Identidade (após aprovação)" },
-          { id: "arquitetura", rotulo: "arquitetura de marca", dias: 5, padrao: false,
-            conteudo: "organização e concepção visual das submarcas",
-            etapa: "Arquitetura de marca e submarcas" },
-          { id: "aplgraficas", rotulo: "aplicações gráficas", dias: 3, padrao: true,
-            conteudo: "cartão de visitas, papel timbrado e envelope",
-            etapa: "Aplicações (após aprovação da Identidade Visual)" },
-          { id: "apldigitais", rotulo: "aplicações digitais", dias: 2, padrao: true,
-            conteudo: "assinatura de e-mail, redes sociais (perfil, capa e modelo de postagens para feed e stories), modelo de apresentação",
+          { id: "arquitetura", rotulo: { pt: "arquitetura de marca", en: "brand architecture" }, dias: 5, padrao: false,
+            conteudo: { pt: "organização e concepção visual das submarcas", en: "structure and visual design of the sub-brands" },
+            etapa: { pt: "Arquitetura de marca e submarcas", en: "Brand architecture and sub-brands" } },
+          { id: "aplgraficas", rotulo: { pt: "aplicações gráficas", en: "print applications" }, dias: 3, padrao: true,
+            conteudo: { pt: "cartão de visitas, papel timbrado e envelope", en: "business card, letterhead and envelope" },
+            etapa: { pt: "Aplicações (após aprovação da Identidade Visual)", en: "Applications (after Visual Identity approval)" } },
+          { id: "apldigitais", rotulo: { pt: "aplicações digitais", en: "digital applications" }, dias: 2, padrao: true,
+            conteudo: { pt: "assinatura de e-mail, redes sociais (perfil, capa e modelo de postagens para feed e stories), modelo de apresentação", en: "email signature, social media (profile, cover and post templates for feed and stories), presentation template" },
             etapa: "Aplicações (após aprovação da Identidade Visual)" },
         ],
         // entram no cronograma sempre, independente dos modulos marcados
-        etapasFixas: [{ nome: "Revisões (2 rodadas de alterações)", dias: 5 }],
+        etapasFixas: [{ nome: { pt: "Revisões (2 rodadas de alterações)", en: "Revisions (2 rounds of changes)" }, dias: 5 }],
         // propostas reais, pra comparar antes de definir o valor
         referencias: [
           { cliente: "Anik",           ano: 2022, modulos: 3, dias: 35, valor: 9000 },
@@ -541,40 +615,40 @@
       {
         id: "site",
         nome: "Site",
-        tituloPadrao: "Site (interface)",
+        tituloPadrao: { pt: "Site (interface)", en: "Website (interface)" },
         // quando os modulos de dev entram, o titulo do servico muda
         variantes: [
-          { requer: ["programacao"], titulo: "Site (interface + desenvolvimento)" },
+          { requer: ["programacao"], titulo: { pt: "Site (interface + desenvolvimento)", en: "Website (interface + development)" } },
         ],
         descricao: "",
         // Dias derivados das duas variacoes da proposta 026/2022 (FCR):
         // so interface = 15 dias (pesquisa+layout+UI), com dev = 45.
         modulos: [
-          { id: "pesquisa", rotulo: "pesquisa", dias: 5, padrao: true,
-            conteudo: "imersão para entender e desenvolver toda a estrutura e arquitetura do site e suas páginas",
-            etapa: "Pesquisa e arquitetura de informação" },
-          { id: "layout", rotulo: "layout", dias: 4, padrao: true,
-            conteudo: "criação de páginas-chave, buscando a aprovação e o alinhamento",
-            etapa: "Layout das páginas-chave (busca aprovação)" },
-          { id: "ui", rotulo: "user interface", dias: 6, padrao: true, obrigatorio: true,
-            conteudo: "montagem de layout exclusivo com a identidade do cliente, com foco na usabilidade e na interface de todas as plataformas (computadores, smartphones, tablets)",
-            etapa: "User interface e responsividade" },
-          { id: "programacao", rotulo: "programação", dias: 15, padrao: true,
-            conteudo: "montagem HTML/CSS do layout de forma responsiva, com área de homologação para o cliente acompanhar e validar o andamento",
-            etapa: "Programação e área de homologação" },
-          { id: "implementacao", rotulo: "implementação", dias: 8, padrao: true,
-            conteudo: "implementação do gerenciamento de conteúdo, com documentação de uso das ferramentas para o cliente dar continuidade",
-            etapa: "Implementação do gerenciador de conteúdo" },
-          { id: "configuracoes", rotulo: "configurações", dias: 7, padrao: true,
-            conteudo: "configurações de SEO para as principais ferramentas de busca e redes sociais, hospedagem e publicação após a validação na homologação",
-            etapa: "SEO, hospedagem e publicação" },
+          { id: "pesquisa", rotulo: { pt: "pesquisa", en: "research" }, dias: 5, padrao: true,
+            conteudo: { pt: "imersão para entender e desenvolver toda a estrutura e arquitetura do site e suas páginas", en: "immersion to understand and develop the whole structure and information architecture of the site and its pages" },
+            etapa: { pt: "Pesquisa e arquitetura de informação", en: "Research and information architecture" } },
+          { id: "layout", rotulo: { pt: "layout", en: "layout" }, dias: 4, padrao: true,
+            conteudo: { pt: "criação de páginas-chave, buscando a aprovação e o alinhamento", en: "design of the key pages, for approval and alignment" },
+            etapa: { pt: "Layout das páginas-chave (busca aprovação)", en: "Key page layouts (for approval)" } },
+          { id: "ui", rotulo: { pt: "user interface", en: "user interface" }, dias: 6, padrao: true, obrigatorio: true,
+            conteudo: { pt: "montagem de layout exclusivo com a identidade do cliente, com foco na usabilidade e na interface de todas as plataformas (computadores, smartphones, tablets)", en: "bespoke layout built on the identity of the client, focused on usability and on the interface across every platform (desktop, smartphone, tablet)" },
+            etapa: { pt: "User interface e responsividade", en: "User interface and responsiveness" } },
+          { id: "programacao", rotulo: { pt: "programação", en: "development" }, dias: 15, padrao: true,
+            conteudo: { pt: "montagem HTML/CSS do layout de forma responsiva, com área de homologação para o cliente acompanhar e validar o andamento", en: "responsive HTML/CSS build of the layout, with a staging area where the client can follow and validate progress" },
+            etapa: { pt: "Programação e área de homologação", en: "Development and staging area" } },
+          { id: "implementacao", rotulo: { pt: "implementação", en: "implementation" }, dias: 8, padrao: true,
+            conteudo: { pt: "implementação do gerenciamento de conteúdo, com documentação de uso das ferramentas para o cliente dar continuidade", en: "content management setup, with documentation so the client can carry on managing the site" },
+            etapa: { pt: "Implementação do gerenciador de conteúdo", en: "Content management setup" } },
+          { id: "configuracoes", rotulo: { pt: "configurações", en: "configuration" }, dias: 7, padrao: true,
+            conteudo: { pt: "configurações de SEO para as principais ferramentas de busca e redes sociais, hospedagem e publicação após a validação na homologação", en: "SEO configuration for the main search engines and social networks, hosting and publishing once staging has been signed off" },
+            etapa: { pt: "SEO, hospedagem e publicação", en: "SEO, hosting and publishing" } },
         ],
         etapasFixas: [],
         // entram na descricao do servico; "requer" limita a nota a um modulo
         observacoes: [
-          { texto: "O conteúdo do site, textual e fotográfico, é fornecido pelo cliente." },
+          { texto: { pt: "O conteúdo do site, textual e fotográfico, é fornecido pelo cliente.", en: "Site content — copy and photography — is supplied by the client." } },
           { requer: "programacao",
-            texto: "Após a entrega do site, fazemos um acompanhamento gratuito durante 30 dias. Depois desse período, qualquer ajuste está sujeito a orçamento." },
+            texto: { pt: "Após a entrega do site, fazemos um acompanhamento gratuito durante 30 dias. Depois desse período, qualquer ajuste está sujeito a orçamento.", en: "After the site goes live we provide 30 days of free support. Beyond that, any adjustment is quoted separately." } },
         ],
         referencias: [
           { cliente: "FCR · interface", ano: 2022, modulos: 3, dias: 15, valor: 4000 },
@@ -588,12 +662,12 @@
 
     // O titulo do servico muda conforme os modulos escolhidos: a primeira
     // variante cujos modulos estejam TODOS marcados vence.
-    function tituloDoTemplate(template, marcados) {
+    function tituloDoTemplate(template, marcados, idioma) {
       const v = (template.variantes || []).find((v) => v.requer.every((id) => marcados[id]));
-      return v ? v.titulo : (template.tituloPadrao || template.nome);
+      return tx(v ? v.titulo : (template.tituloPadrao || template.nome), idioma);
     }
 
-    function montarTemplate(template, marcados) {
+    function montarTemplate(template, marcados, idioma = "pt") {
       const escolhidos = template.modulos.filter((m) => marcados[m.id]);
       const dias = escolhidos.reduce((t, m) => t + m.dias, 0) +
                    template.etapasFixas.reduce((t, e) => t + e.dias, 0);
@@ -602,28 +676,29 @@
       // notas sem "requer" valem sempre; com "requer", so se o modulo entrou
       const notas = (template.observacoes || [])
         .filter((o) => !o.requer || marcados[o.requer])
-        .map((o) => o.texto);
-      const descricao = [template.descricao, ...notas].filter(Boolean).join(" ");
+        .map((o) => tx(o.texto, idioma));
+      const descricao = [tx(template.descricao, idioma), ...notas].filter(Boolean).join(" ");
 
       const servico = {
-        titulo: tituloDoTemplate(template, marcados),
-        prazo: `${prazo} dias úteis`,
+        titulo: tituloDoTemplate(template, marcados, idioma),
+        prazo: `${prazo} ${T[idioma].diasUteis}`,
         valor: "",
-        parcelas: "50% no início e 50% na entrega",
+        parcelas: idioma === "en" ? "50% upfront, 50% on delivery" : "50% no início e 50% na entrega",
         descricao,
-        itens: escolhidos.map((m) => ({ rotulo: m.rotulo, conteudo: m.conteudo })),
+        itens: escolhidos.map((m) => ({ rotulo: tx(m.rotulo, idioma), conteudo: tx(m.conteudo, idioma) })),
       };
 
       // modulos que dividem a mesma etapa viram uma linha so, somando os dias
       const porEtapa = [];
       escolhidos.forEach((m) => {
-        const existente = porEtapa.find((e) => e.nome === m.etapa);
+        const nomeEtapa = tx(m.etapa, idioma);
+        const existente = porEtapa.find((e) => e.nome === nomeEtapa);
         if (existente) existente.dias += m.dias;
-        else porEtapa.push({ nome: m.etapa, dias: m.dias });
+        else porEtapa.push({ nome: nomeEtapa, dias: m.dias });
       });
-      template.etapasFixas.forEach((e) => porEtapa.push({ nome: e.nome, dias: e.dias }));
+      template.etapasFixas.forEach((e) => porEtapa.push({ nome: tx(e.nome, idioma), dias: e.dias }));
 
-      const etapas = porEtapa.map((e) => ({ nome: e.nome, duracao: `${e.dias} dias úteis` }));
+      const etapas = porEtapa.map((e) => ({ nome: e.nome, duracao: `${e.dias} ${T[idioma].diasUteis}` }));
       return { servico, etapas, diasBrutos: dias, prazo };
     }
 
@@ -658,6 +733,8 @@
       const [cliente, setCliente] = useState("");
       const [apresentacao, setApresentacao] = useState("");
       const [validadeDias, setValidadeDias] = useState(30);
+      // idioma do DOCUMENTO gerado (a interface do gerador segue em PT)
+      const [idioma, setIdioma] = useState("pt");
       const [servicos, setServicos] = useState([criarServicoVazio()]);
       const [cronograma, setCronograma] = useState([criarEtapaVazia()]);
       const [proximoNum, setProximoNum] = useState(null);
@@ -728,7 +805,7 @@
           const valorTotal = servicos.reduce((s, sv) => s + (parseFloat(sv.valor) || 0), 0);
           const campos = {
             cliente: cliente || "sem nome", apresentacao, servicos, cronograma,
-            validade_dias: validadeDias, valor_total: valorTotal,
+            validade_dias: validadeDias, valor_total: valorTotal, idioma,
           };
 
           let linha, numeroFmt;
@@ -753,7 +830,7 @@
 
           setPropostaFinal({
             id: linha && linha.id, numeroFmt, cliente, apresentacao, servicos,
-            cronograma, validadeDias, data: linha && linha.criado_em,
+            cronograma, validadeDias, idioma, data: linha && linha.criado_em,
           });
           setEditando(null);
           setTela("pronto");
@@ -764,6 +841,7 @@
         setCliente(modo === "duplicar" ? "" : (p.cliente || ""));
         setApresentacao(p.apresentacao || "");
         setValidadeDias(p.validade_dias || 30);
+        setIdioma(p.idioma || "pt");
         setServicos(p.servicos && p.servicos.length ? p.servicos : [criarServicoVazio()]);
         setCronograma(p.cronograma && p.cronograma.length ? p.cronograma : [criarEtapaVazia()]);
         // duplicar = proposta nova, ganha numero novo ao salvar
@@ -852,7 +930,7 @@
                   <PropostaRender
                     numeroFmt={editando ? editando.numero_proposta : numeroProposta(proximoNum, new Date().getFullYear())}
                     cliente={cliente} apresentacao={apresentacao} servicos={servicos}
-                    cronograma={cronograma} validadeDias={validadeDias} />
+                    cronograma={cronograma} validadeDias={validadeDias} idioma={idioma} />
                 </div>
               </div>
             </div>
@@ -868,6 +946,15 @@
               <p className="subtitulo">rodrigo gondim</p>
             </div>
             <div className="header-right">
+              <div className="seletor-idioma" title="idioma do documento gerado">
+                {["pt", "en"].map((i) => (
+                  <button key={i}
+                          className={"btn-idioma" + (idioma === i ? " is-ativo" : "")}
+                          onClick={() => setIdioma(i)}>
+                    {i.toUpperCase()}
+                  </button>
+                ))}
+              </div>
               <div className="contador-box">
                 <span className="contador-label">próxima</span>
                 <span className="contador-num">
@@ -908,7 +995,7 @@
             </div>
           )}
 
-          <PainelTemplates onAplicar={aplicarTemplate} />
+          <PainelTemplates onAplicar={aplicarTemplate} idioma={idioma} />
 
           <section className="secao">
             <div className="secao-header">
@@ -1110,7 +1197,8 @@
       );
     }
 
-    function PropostaRender({ numeroFmt, cliente, apresentacao, servicos, cronograma, validadeDias, data }) {
+    function PropostaRender({ numeroFmt, cliente, apresentacao, servicos, cronograma, validadeDias, data, idioma = "pt" }) {
+      const t = T[idioma] || T.pt;
       // "data" so vem em proposta salva/reaberta. Sem ela (preview de proposta
       // nova) cai em hoje. Sem isso uma proposta antiga reaberta — ou aberta
       // pelo link — mostraria a data de hoje no cabecalho.
@@ -1125,12 +1213,12 @@
               <div className="doc-contato">T {DADOS_FIXOS.telefone}<br />{DADOS_FIXOS.email}</div>
             </div>
             <div className="doc-proposta-box">
-              <div className="doc-proposta-num">proposta</div>
-              <div className="doc-proposta-num-big">nº {numeroFmt}</div>
-              <div className="doc-proposta-data">{formatarData(data ? new Date(data) : new Date())}</div>
+              <div className="doc-proposta-num">{t.proposta}</div>
+              <div className="doc-proposta-num-big">{t.numeroPrefixo} {numeroFmt}</div>
+              <div className="doc-proposta-data">{formatarData(data ? new Date(data) : new Date(), idioma)}</div>
               {cliente && (
                 <div className="doc-proposta-para">
-                  <span className="doc-proposta-para-label">para</span>
+                  <span className="doc-proposta-para-label">{t.para}</span>
                   <span className="doc-proposta-para-nome">{cliente}</span>
                 </div>
               )}
@@ -1140,33 +1228,33 @@
           {/* sem texto, o rotulo ficaria orfao sobre um vazio */}
           {apresentacao && apresentacao.trim() && (
             <section className="doc-secao">
-              <div className="doc-secao-label doc-secao-label--green">apresentação</div>
+              <div className="doc-secao-label doc-secao-label--green">{t.apresentacao}</div>
               <p className="doc-apresentacao-txt">{apresentacao}</p>
             </section>
           )}
 
           <section className="doc-secao">
             <div className="doc-manifesto">
-              {BIO.map((paragrafo, i) => <p key={i}>{paragrafo}</p>)}
+              {BIO[idioma].map((paragrafo, i) => <p key={i}>{paragrafo}</p>)}
             </div>
 
-            <div className="doc-secao-label doc-secao-label--blue">principais premiações</div>
+            <div className="doc-secao-label doc-secao-label--blue">{t.premiacoes}</div>
             <div className="doc-premiacoes">
               {PREMIACOES.map((premio, i) => (
                 <div key={i} className="doc-premiacao">
-                  <span className="doc-premiacao-titulo">{premio.titulo}</span>
-                  <span className="doc-premiacao-detalhe">{premio.detalhe}</span>
+                  <span className="doc-premiacao-titulo">{tx(premio.titulo, idioma)}</span>
+                  <span className="doc-premiacao-detalhe">{tx(premio.detalhe, idioma)}</span>
                 </div>
               ))}
             </div>
 
             <div className="doc-metodologia">
-              <div className="doc-secao-label doc-secao-label--yellow">metodologia sem receita</div>
+              <div className="doc-secao-label doc-secao-label--yellow">{t.metodologia}</div>
 
               <div className="doc-metodo-grade">
                 {METODOLOGIA.map((fase) => (
                   <div key={fase.letra} className="doc-metodo-linha" style={{ "--fase": "var(--rp-" + fase.cor + ")" }}>
-                    <span className="doc-metodo-nome"><b>{fase.letra}.</b> {fase.nome}</span>
+                    <span className="doc-metodo-nome"><b>{fase.letra}.</b> {tx(fase.nome, idioma)}</span>
                     <span className="doc-metodo-trilha">
                       {Array.from({ length: METODO_PASSOS }, (_, i) => (
                         <span key={i} className="doc-metodo-passo">
@@ -1183,7 +1271,7 @@
                   <div key={fase.letra} className="doc-metodo-etapa" style={{ "--fase": "var(--rp-" + fase.cor + ")" }}>
                     <span className="doc-metodo-letra">{fase.letra}</span>
                     <p className="doc-metodo-txt">
-                      <strong>{fase.titulo}</strong> {fase.texto}
+                      <strong>{tx(fase.titulo, idioma)}</strong> {tx(fase.texto, idioma)}
                     </p>
                   </div>
                 ))}
@@ -1198,7 +1286,7 @@
                 <span className="doc-servico-titulo">{sv.titulo}</span>
                 <span className="doc-servico-prazo">{sv.prazo}</span>
                 <span className="doc-servico-valor">
-                  {formatarValor(parseFloat(sv.valor) || 0)}
+                  {formatarValor(parseFloat(sv.valor) || 0, idioma)}
                   {sv.parcelas && <span className="doc-servico-parcelas"> · {sv.parcelas}</span>}
                 </span>
               </div>
@@ -1215,10 +1303,8 @@
           ))}
 
           <section className="doc-secao">
-            <div className="doc-secao-label doc-secao-label--pink">cronograma</div>
-            <div className="doc-cronograma-intro">
-              O cronograma pode sofrer alterações de acordo com a necessidade, pacote escolhido e prazo do cliente, podendo ocasionar custos extras para prazos emergenciais.
-            </div>
+            <div className="doc-secao-label doc-secao-label--pink">{t.cronograma}</div>
+            <div className="doc-cronograma-intro">{t.cronogramaIntro}</div>
             <div>
               {cronograma.filter((e) => e.nome || e.duracao).map((e, i) => (
                 <div key={i} className="doc-cronograma-linha">
@@ -1230,30 +1316,22 @@
           </section>
 
           <section className="doc-observacoes">
-            <div className="doc-secao-label doc-secao-label--red">observações importantes</div>
+            <div className="doc-secao-label doc-secao-label--red">{t.observacoes}</div>
             <div className="doc-obs-bloco">
-              <strong className="doc-obs-titulo">acompanhamento gráfico</strong>
-              <p className="doc-obs-txt">
-                O percentual de acompanhamento gráfico é de 15% sobre o valor dos serviços dos fornecedores. Serve para que o cliente tenha suporte técnico especializado durante a produção em gráfica. A responsabilidade técnica da empresa de design ocorre somente até a aprovação da prova digital. Serviço opcional, mas de grande importância.
-              </p>
+              <strong className="doc-obs-titulo">{t.obsAcompanhamento}</strong>
+              <p className="doc-obs-txt">{t.obsAcompanhamentoTxt}</p>
             </div>
             <div className="doc-obs-bloco">
-              <strong className="doc-obs-titulo">taxa de urgência</strong>
-              <p className="doc-obs-txt">
-                Ocorre quando os prazos para criação/editoração/layout são menores do que os habituais, ou quando o serviço demanda horas extras ou contratação extraordinária de profissionais.
-              </p>
+              <strong className="doc-obs-titulo">{t.obsUrgencia}</strong>
+              <p className="doc-obs-txt">{t.obsUrgenciaTxt}</p>
             </div>
             <div className="doc-obs-bloco">
-              <strong className="doc-obs-titulo">validade da proposta</strong>
-              <p className="doc-obs-txt">
-                Esta proposta é válida por {validadeDias} dias a partir da data de emissão. Após esse período, os valores e prazos podem ser reajustados.
-              </p>
+              <strong className="doc-obs-titulo">{t.obsValidade}</strong>
+              <p className="doc-obs-txt">{t.obsValidadeTxt(validadeDias)}</p>
             </div>
             <div className="doc-obs-bloco">
-              <strong className="doc-obs-titulo">disposições gerais</strong>
-              <p className="doc-obs-txt">
-                Não estão inclusos: produção de conteúdo (textos, imagens), custos de impressão, distribuição, produção fotográfica e provas gráficas. Prazos contados a partir do primeiro pagamento. Mudanças conceituais no briefing após aprovação acarretam custos adicionais. Este orçamento engloba 1 (uma) alteração de layout. Arquivos digitais passam a ser propriedade do Cliente somente após o pagamento final.
-              </p>
+              <strong className="doc-obs-titulo">{t.obsGerais}</strong>
+              <p className="doc-obs-txt">{t.obsGeraisTxt}</p>
             </div>
           </section>
 
@@ -1261,7 +1339,7 @@
       );
     }
 
-    function PainelTemplates({ onAplicar }) {
+    function PainelTemplates({ onAplicar, idioma }) {
       const [aberto, setAberto] = useState(null);
       const [marcados, setMarcados] = useState({});
 
@@ -1274,7 +1352,7 @@
       }
 
       const template = TEMPLATES.find((t) => t.id === aberto);
-      const previa = template ? montarTemplate(template, marcados) : null;
+      const previa = template ? montarTemplate(template, marcados, idioma) : null;
 
       return (
         <div className="templates">
@@ -1299,8 +1377,8 @@
                            disabled={m.obrigatorio}
                            onChange={(e) => setMarcados({ ...marcados, [m.id]: e.target.checked })} />
                     <span className="template-modulo-txt">
-                      <span className="template-modulo-rotulo">{m.rotulo}</span>
-                      <span className="template-modulo-conteudo">{m.conteudo}</span>
+                      <span className="template-modulo-rotulo">{tx(m.rotulo, idioma)}</span>
+                      <span className="template-modulo-conteudo">{tx(m.conteudo, idioma)}</span>
                     </span>
                     <span className="template-modulo-dias">{m.dias}d</span>
                   </label>
@@ -1308,7 +1386,7 @@
                 {template.etapasFixas.map((e) => (
                   <div key={e.nome} className="template-modulo is-fixo">
                     <span className="template-modulo-txt">
-                      <span className="template-modulo-rotulo">{e.nome}</span>
+                      <span className="template-modulo-rotulo">{tx(e.nome, idioma)}</span>
                       <span className="template-modulo-conteudo">sempre incluída</span>
                     </span>
                     <span className="template-modulo-dias">{e.dias}d</span>
@@ -1395,7 +1473,7 @@
               id: p.id, numeroFmt: p.numero_proposta, cliente: p.cliente,
               apresentacao: p.apresentacao, servicos: p.servicos || [],
               cronograma: p.cronograma || [], validadeDias: p.validade_dias,
-              data: p.criado_em,
+              idioma: p.idioma || "pt", data: p.criado_em,
             });
             document.title = `Proposta ${p.numero_proposta} · ${p.cliente}`;
           })
