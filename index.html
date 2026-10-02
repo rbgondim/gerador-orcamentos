@@ -331,6 +331,7 @@
     .pagina--miligrama .doc-proposta-box { margin: -8mm -8mm 0 0; padding: 10px 14px; border: 2px solid #000; }
     .pagina--miligrama .doc-proposta-para { border-top-color: #000; }
     .pagina--miligrama .doc-secao-label { font-weight: 500; }
+    .pagina--miligrama .doc-manifesto p:first-child { font-weight: 500; }
     .pagina--miligrama .doc-metodo-letra { border-radius: 0; border-width: 1.5px; }
     .pagina--miligrama::after {
       content: ""; position: absolute; right: 12mm; bottom: 12mm;
@@ -503,6 +504,30 @@
         "Every couple of years I get obsessively engaged in one specific design craft: editorial " +
         "design (which I still teach), type design, creative methodology and, most recently, " +
         "3D modelling and animation.",
+      ],
+    };
+
+    // Abertura do visual miligrama: o manifesto dos PDFs de proposta da
+    // miligrama (2022), no lugar da bio em primeira pessoa. O contato segue o
+    // do Rodrigo nos dois visuais, por decisao dele.
+    const MANIFESTO_MILIGRAMA = {
+      pt: [
+        "Nós não lemos receita.",
+        "O design é uma ferramenta que permite que marcas e pessoas possam se expressar. " +
+        "Por isso nosso design é autoral, mas não é assinado. Não nos damos bem com menu de " +
+        "congelados. Cada projeto, cada prato servido, é criado com os ingredientes que você " +
+        "nos oferece, pensados exclusivamente para saciar a sua fome. A única constante é o " +
+        "nosso tempero, a nossa forma de fazer e nossa metodologia. As miligramas que levam " +
+        "seu projeto de um almoço despretensioso para um prato 3 estrelas Michelin.",
+      ],
+      en: [
+        "We don't follow recipes.",
+        "Design is a tool that lets brands and people express themselves. That's why our " +
+        "design is authorial, but unsigned. We don't get along with frozen-food menus. Every " +
+        "project, every dish served, is made with the ingredients you bring us, conceived " +
+        "solely to satisfy your hunger. The only constant is our seasoning — our way of " +
+        "doing things and our methodology. The milligrams that take your project from an " +
+        "unpretentious lunch to a three-Michelin-star dish.",
       ],
     };
 
@@ -1353,7 +1378,7 @@
 
           <section className="doc-secao">
             <div className="doc-manifesto">
-              {BIO[idioma].map((paragrafo, i) => <p key={i}>{paragrafo}</p>)}
+              {(tema === "miligrama" ? MANIFESTO_MILIGRAMA : BIO)[idioma].map((paragrafo, i) => <p key={i}>{paragrafo}</p>)}
             </div>
 
             <div className="doc-secao-label doc-secao-label--blue">{t.premiacoes}</div>
