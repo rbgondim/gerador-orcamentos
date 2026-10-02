@@ -20,7 +20,7 @@ create table if not exists public.propostas_geradas (
   validade_dias   int         not null default 30,
   valor_total     numeric(12,2) not null default 0,
   idioma          text        not null default 'pt',
-  tema            text        not null default 'escuro',
+  tema            text        not null default 'escuro',  -- escuro | claro | miligrama
   criado_em       timestamptz not null default now()
 );
 

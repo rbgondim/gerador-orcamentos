@@ -53,6 +53,9 @@
     button:hover { opacity: 0.75; }
 
     .container { max-width: 1000px; margin: 0 auto; padding: 56px 28px 0; min-height: 100vh; }
+    /* barras de comando (preview, tela final, link) nao sao a pagina inteira:
+       com o min-height de cima, empurravam o documento uma tela pra baixo */
+    .container.no-print { min-height: 0; }
 
     /* ---- Cabeçalho ---- */
     .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 56px; padding-bottom: 28px; border-bottom: 1px solid var(--linha); }
@@ -179,7 +182,6 @@
     }
 
     .rodape-acoes { display: flex; justify-content: flex-end; padding: 28px 0 56px; border-top: 1px solid var(--linha); margin-top: 56px; }
-    .seletor-exemplo { margin-bottom: 28px; text-align: right; }
 
     /* ---- Avisos (amarelo da marca) ---- */
     .aviso-erro { padding: 22px 24px; background: rgba(255, 191, 1, 0.08); border: 1px solid var(--rp-yellow); border-radius: var(--rp-radius); margin-bottom: 28px; }
@@ -310,6 +312,31 @@
       --doc-pink-txt: #c4469f;
     }
 
+    /* Visual miligrama — tudo P/B sobre o fundo branco (herda os tokens de
+       .pagina--claro) e a tipografia continua a mesma. Como nos PDFs de
+       proposta da miligrama: logo e caixa do numero vazados para os cantos
+       da folha, letras da metodologia em quadrado e o quadrado preto no
+       canto inferior direito. */
+    .pagina--miligrama {
+      position: relative;
+      /* as cores de marca viram preto DENTRO da folha — inclusive os
+         quadrados da metodologia, que leem var(--rp-<cor>) */
+      --rp-green: #000; --rp-blue: #000; --rp-yellow: #000; --rp-pink: #000; --rp-red: #000;
+      --doc-green-txt: #000; --doc-blue-txt: #000; --doc-yellow-txt: #000;
+      --doc-pink-txt: #000; --doc-red-txt: #000;
+    }
+    .pagina--miligrama .doc-cabecalho { border-bottom: none; align-items: flex-start; }
+    .doc-logo-miligrama { display: block; width: 46mm; height: auto; margin: -8mm 0 0 -8mm; }
+    .pagina--miligrama .doc-contato { margin-left: -8mm; margin-top: 12px; }
+    .pagina--miligrama .doc-proposta-box { margin: -8mm -8mm 0 0; padding: 10px 14px; border: 2px solid #000; }
+    .pagina--miligrama .doc-proposta-para { border-top-color: #000; }
+    .pagina--miligrama .doc-secao-label { font-weight: 500; }
+    .pagina--miligrama .doc-metodo-letra { border-radius: 0; border-width: 1.5px; }
+    .pagina--miligrama::after {
+      content: ""; position: absolute; right: 12mm; bottom: 12mm;
+      width: 6mm; height: 6mm; background: #000;
+    }
+
     /* ===== Impressão ===== */
     @media print {
       @page { size: A4; margin: 0; }
@@ -436,6 +463,12 @@
         </svg>
       );
     }
+
+    // Logo da miligrama, extraido dos PDFs de proposta de 2022 (bitmap de
+    // 300 ppi que vinha embutido neles), convertido para preto sobre fundo
+    // transparente e recortado rente ao desenho. 574x122 px — no tamanho do
+    // documento (46mm) da ~315 dpi impresso.
+    const LOGO_MILIGRAMA = "data:image/png;base64,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";
 
     const DADOS_FIXOS = {
       nome: "rodrigo gondim.",
@@ -970,36 +1003,6 @@
         setErro(null);
       }
 
-      function preencherExemplo() {
-        setCliente("Unkê");
-        setApresentacao("Criação de material gráfico de sinalização para obra e escritório, além de uniforme, seguindo as diretrizes de identidade visuais já estabelecidas em brandbook do cliente.");
-        setValidadeDias(30);
-        setServicos([
-          {
-            titulo: "Sinalização",
-            prazo: "7 dias úteis",
-            valor: "1500",
-            parcelas: "50% no início e 50% na entrega",
-            descricao: "Criação de layouts em tamanho real para impressão de placas de obra e escritório, seguindo direcionamentos do brandbook do cliente. Criação de ícones conforme necessário.",
-            itens: [
-              { rotulo: "sinalização obras", conteudo: "7 placas" },
-              { rotulo: "sinalização escritório", conteudo: "3 placas" },
-            ],
-          },
-          {
-            titulo: "Uniforme",
-            prazo: "3 dias úteis",
-            valor: "400",
-            parcelas: "50% no início e 50% na entrega",
-            descricao: "Criação de layout para uniforme.",
-            itens: [{ rotulo: "", conteudo: "" }],
-          },
-        ]);
-        setCronograma([
-          { nome: "Criação", duracao: "10 dias úteis" },
-        ]);
-      }
-
       if (tela === "historico") return <TelaHistorico historico={historico} onVoltar={() => setTela("form")} onCarregar={carregarDoHistorico} />;
 
       if (tela === "pronto") {
@@ -1060,7 +1063,7 @@
                 ))}
               </div>
               <div className="seletor-idioma" title="fundo do documento gerado">
-                {[["escuro", "preto"], ["claro", "branco"]].map(([valor, rotulo]) => (
+                {[["escuro", "preto"], ["claro", "branco"], ["miligrama", "miligrama"]].map(([valor, rotulo]) => (
                   <button key={valor}
                           className={"btn-idioma" + (tema === valor ? " is-ativo" : "")}
                           onClick={() => setTema(valor)}>
@@ -1080,10 +1083,6 @@
           </header>
 
           {erro && <AvisoErro erro={erro} onFechar={() => setErro(null)} />}
-
-          <div className="seletor-exemplo">
-            <button className="btn-link" onClick={preencherExemplo}>carregar proposta Unkê →</button>
-          </div>
 
           <section className="secao">
             <label>cliente</label>
@@ -1316,13 +1315,19 @@
       // nova) cai em hoje. Sem isso uma proposta antiga reaberta — ou aberta
       // pelo link — mostraria a data de hoje no cabecalho.
       return (
-        <div className={"pagina" + (tema === "claro" ? " pagina--claro" : "")}>
+        <div className={"pagina" +
+                        (tema === "claro" ? " pagina--claro" : "") +
+                        (tema === "miligrama" ? " pagina--claro pagina--miligrama" : "")}>
           <header className="doc-cabecalho">
             <div>
-              <div className="doc-marca">
-                <Ampersand />
-                <span className="doc-logo">{DADOS_FIXOS.nome}</span>
-              </div>
+              {tema === "miligrama" ? (
+                <img className="doc-logo-miligrama" src={LOGO_MILIGRAMA} alt="miligrama." />
+              ) : (
+                <div className="doc-marca">
+                  <Ampersand />
+                  <span className="doc-logo">{DADOS_FIXOS.nome}</span>
+                </div>
+              )}
               <div className="doc-contato">T {DADOS_FIXOS.telefone}<br />{DADOS_FIXOS.email}</div>
             </div>
             <div className="doc-proposta-box">
