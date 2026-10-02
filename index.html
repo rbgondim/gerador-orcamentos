@@ -205,84 +205,110 @@
        descarta o fundo preto na impressão/PDF e o texto branco some.
        =================================================================== */
     .pagina {
+      /* Tokens do documento. O tema escuro (padrao) e a identidade do site;
+         .pagina--claro redefine so estes valores. */
+      --doc-bg: var(--rp-black);
+      --doc-fg: var(--rp-white);
+      --doc-fg-rgb: 255 255 255;
+      --doc-mute: var(--rp-gray);
+      /* cor de marca usada em TEXTO (rotulos, letras da metodologia) */
+      --doc-green-txt: var(--rp-green);
+      --doc-blue-txt: var(--rp-blue);
+      --doc-yellow-txt: var(--rp-yellow);
+      --doc-pink-txt: var(--rp-pink);
+      --doc-red-txt: var(--rp-red);
       width: 210mm; min-height: 297mm; padding: 20mm;
-      background: var(--rp-black); color: var(--rp-white);
+      background: var(--doc-bg); color: var(--doc-fg);
       font-family: var(--rp-font); font-size: 11px; line-height: 1.5;
       -webkit-print-color-adjust: exact; print-color-adjust: exact;
     }
-    .doc-cabecalho { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid var(--rp-white); margin-bottom: 34px; }
+    .doc-cabecalho { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid var(--doc-fg); margin-bottom: 34px; }
     .doc-marca { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
     .doc-amp { width: 30px; height: 30px; flex: none; display: block; }
     .doc-logo { font-size: 30px; font-weight: 500; letter-spacing: -0.03em; line-height: 1; }
-    .doc-contato { font-size: 10px; color: var(--rp-gray); line-height: 1.7; margin-top: 14px; }
+    .doc-contato { font-size: 10px; color: var(--doc-mute); line-height: 1.7; margin-top: 14px; }
     .doc-proposta-box { text-align: right; }
-    .doc-proposta-num { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--rp-gray); }
+    .doc-proposta-num { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--doc-mute); }
     .doc-proposta-num-big { font-size: 26px; font-weight: 500; margin-top: 4px; letter-spacing: -0.02em; }
-    .doc-proposta-data { font-size: 10px; color: var(--rp-gray); margin-top: 10px; }
+    .doc-proposta-data { font-size: 10px; color: var(--doc-mute); margin-top: 10px; }
     .doc-secao { margin-bottom: 34px; }
 
     /* Labels coloridos por seção — mesma convenção do bloco de info do About */
-    .doc-secao-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 12px; color: var(--rp-green); }
-    .doc-secao-label--green  { color: var(--rp-green); }
-    .doc-secao-label--blue   { color: var(--rp-blue); }
-    .doc-secao-label--yellow { color: var(--rp-yellow); }
-    .doc-secao-label--pink   { color: var(--rp-pink); }
-    .doc-secao-label--red    { color: var(--rp-red); }
+    .doc-secao-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 12px; color: var(--doc-green-txt); }
+    .doc-secao-label--green  { color: var(--doc-green-txt); }
+    .doc-secao-label--blue   { color: var(--doc-blue-txt); }
+    .doc-secao-label--yellow { color: var(--doc-yellow-txt); }
+    .doc-secao-label--pink   { color: var(--doc-pink-txt); }
+    .doc-secao-label--red    { color: var(--doc-red-txt); }
 
-    .doc-proposta-para { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.25); display: flex; align-items: baseline; justify-content: flex-end; gap: 10px; }
-    .doc-proposta-para-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--rp-gray); }
+    .doc-proposta-para { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgb(var(--doc-fg-rgb) / 0.25); display: flex; align-items: baseline; justify-content: flex-end; gap: 10px; }
+    .doc-proposta-para-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--doc-mute); }
     .doc-proposta-para-nome { font-size: 17px; font-weight: 500; letter-spacing: -0.02em; }
-    .doc-apresentacao-txt { font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.85); margin: 0; max-width: 82%; }
+    .doc-apresentacao-txt { font-size: 13px; line-height: 1.6; color: rgb(var(--doc-fg-rgb) / 0.85); margin: 0; max-width: 82%; }
 
     /* Bloco fixo: apresentação, premiações e metodologia */
-    .doc-manifesto { font-size: 12px; line-height: 1.6; color: rgba(255,255,255,0.85); max-width: 88%; margin: 0 0 32px 0; }
+    .doc-manifesto { font-size: 12px; line-height: 1.6; color: rgb(var(--doc-fg-rgb) / 0.85); max-width: 88%; margin: 0 0 32px 0; }
     .doc-manifesto p { margin: 0 0 10px 0; }
     .doc-manifesto p:last-child { margin-bottom: 0; }
     .doc-premiacoes { columns: 2; column-gap: 34px; font-size: 11px; margin-bottom: 36px; }
     .doc-premiacao { break-inside: avoid; margin-bottom: 9px; }
-    .doc-premiacao-titulo { display: block; font-weight: 500; color: var(--rp-white); line-height: 1.35; }
-    .doc-premiacao-detalhe { display: block; font-size: 10px; color: var(--rp-gray); line-height: 1.35; }
+    .doc-premiacao-titulo { display: block; font-weight: 500; color: var(--doc-fg); line-height: 1.35; }
+    .doc-premiacao-detalhe { display: block; font-size: 10px; color: var(--doc-mute); line-height: 1.35; }
     .doc-metodologia { break-inside: avoid; page-break-inside: avoid; }
     .doc-metodo-grade { margin-bottom: 26px; }
     .doc-metodo-linha { display: grid; grid-template-columns: 124px 1fr; align-items: center; gap: 16px; margin-bottom: 10px; }
-    .doc-metodo-nome { font-size: 11px; letter-spacing: 0.01em; color: var(--rp-white); }
+    .doc-metodo-nome { font-size: 11px; letter-spacing: 0.01em; color: var(--doc-fg); }
     .doc-metodo-nome b { font-weight: 500; }
     .doc-metodo-trilha { display: grid; grid-template-columns: repeat(10, 1fr); align-items: center; }
     .doc-metodo-passo { position: relative; display: flex; justify-content: center; align-items: center; height: 10px; }
-    .doc-metodo-passo::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: rgba(255,255,255,0.45); }
+    .doc-metodo-passo::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: rgb(var(--doc-fg-rgb) / 0.45); }
     .doc-metodo-passo:first-child::before { left: 50%; }
     .doc-metodo-passo:last-child::before { right: 50%; }
     /* vazio = contorno branco; preenchido = cor da fase (ordem fixa do site:
        green, blue, yellow, pink, red — a mesma do marquee da home) */
-    .doc-metodo-quadro { position: relative; width: 8px; height: 8px; border: 1px solid var(--rp-white); background: var(--rp-black); }
+    .doc-metodo-quadro { position: relative; width: 8px; height: 8px; border: 1px solid var(--doc-fg); background: var(--doc-bg); }
     .doc-metodo-quadro.ativo { background: var(--fase); border-color: var(--fase); }
-    .doc-metodo-letra { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--fase); color: var(--fase); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; }
+    .doc-metodo-letra { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--fase); color: var(--fase-txt, var(--fase)); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; }
     /* fluxo por coluna: A,B,C na esquerda e D,E na direita, como no modelo impresso */
     .doc-metodo-etapas { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, auto); grid-auto-flow: column; gap: 16px 34px; }
     .doc-metodo-etapa { display: grid; grid-template-columns: 18px 1fr; gap: 10px; break-inside: avoid; }
-    .doc-metodo-txt { font-size: 10.5px; line-height: 1.5; color: rgba(255,255,255,0.75); margin: 0; }
-    .doc-metodo-txt strong { font-weight: 500; color: var(--rp-white); }
+    .doc-metodo-txt { font-size: 10.5px; line-height: 1.5; color: rgb(var(--doc-fg-rgb) / 0.75); margin: 0; }
+    .doc-metodo-txt strong { font-weight: 500; color: var(--doc-fg); }
 
-    .doc-servico { padding-top: 24px; padding-bottom: 24px; border-top: 1px solid var(--rp-white); }
+    .doc-servico { padding-top: 24px; padding-bottom: 24px; border-top: 1px solid var(--doc-fg); }
     .doc-servico-header { display: grid; grid-template-columns: 32px 1fr auto auto; gap: 18px; align-items: baseline; margin-bottom: 10px; }
-    .doc-servico-num { font-size: 11px; color: var(--rp-gray); letter-spacing: 0.14em; }
+    .doc-servico-num { font-size: 11px; color: var(--doc-mute); letter-spacing: 0.14em; }
     .doc-servico-titulo { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
-    .doc-servico-prazo { font-size: 10px; color: var(--rp-gray); text-transform: uppercase; letter-spacing: 0.12em; white-space: nowrap; }
+    .doc-servico-prazo { font-size: 10px; color: var(--doc-mute); text-transform: uppercase; letter-spacing: 0.12em; white-space: nowrap; }
     .doc-servico-valor { font-size: 16px; font-weight: 500; white-space: nowrap; letter-spacing: -0.01em; }
-    .doc-servico-parcelas { color: var(--rp-gray); font-size: 10px; font-weight: 400; letter-spacing: 0; }
-    .doc-servico-desc { font-size: 11px; color: rgba(255,255,255,0.75); margin-left: 50px; margin-bottom: 14px; margin-top: 0; max-width: 85%; }
+    .doc-servico-parcelas { color: var(--doc-mute); font-size: 10px; font-weight: 400; letter-spacing: 0; }
+    .doc-servico-desc { font-size: 11px; color: rgb(var(--doc-fg-rgb) / 0.75); margin-left: 50px; margin-bottom: 14px; margin-top: 0; max-width: 85%; }
     .doc-itens-lista { margin-left: 50px; }
     .doc-item { display: grid; grid-template-columns: 150px 1fr; gap: 16px; margin-bottom: 7px; font-size: 11px; align-items: baseline; }
-    .doc-item-rotulo { color: var(--rp-gray); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; padding-top: 2px; }
-    .doc-item-conteudo { color: var(--rp-white); line-height: 1.5; }
-    .doc-cronograma-intro { font-size: 10.5px; color: var(--rp-gray); max-width: 75%; margin-bottom: 16px; }
-    .doc-cronograma-linha { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.18); font-size: 11px; }
-    .doc-cronograma-etapa { color: rgba(255,255,255,0.9); flex: 1; padding-right: 16px; }
-    .doc-cronograma-duracao { color: var(--rp-gray); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; white-space: nowrap; }
-    .doc-observacoes { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--rp-white); }
+    .doc-item-rotulo { color: var(--doc-mute); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; padding-top: 2px; }
+    .doc-item-conteudo { color: var(--doc-fg); line-height: 1.5; }
+    .doc-cronograma-intro { font-size: 10.5px; color: var(--doc-mute); max-width: 75%; margin-bottom: 16px; }
+    .doc-cronograma-linha { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgb(var(--doc-fg-rgb) / 0.18); font-size: 11px; }
+    .doc-cronograma-etapa { color: rgb(var(--doc-fg-rgb) / 0.9); flex: 1; padding-right: 16px; }
+    .doc-cronograma-duracao { color: var(--doc-mute); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; white-space: nowrap; }
+    .doc-observacoes { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--doc-fg); }
     .doc-obs-bloco { margin-bottom: 18px; }
-    .doc-obs-titulo { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 6px; font-weight: 500; color: var(--rp-white); }
-    .doc-obs-txt { font-size: 10.5px; color: rgba(255,255,255,0.72); line-height: 1.55; margin: 0; }
+    .doc-obs-titulo { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 6px; font-weight: 500; color: var(--doc-fg); }
+    .doc-obs-txt { font-size: 10.5px; color: rgb(var(--doc-fg-rgb) / 0.72); line-height: 1.55; margin: 0; }
+
+    /* Fundo branco. Amarelo e rosa da marca sobre branco ficam ilegiveis em
+       texto pequeno (1.65:1 e 2.34:1), entao so no TEXTO eles escurecem
+       (#946f00 = 4.6:1, #c4469f = 4.5:1). Os quadrados preenchidos da
+       metodologia continuam nas cores de marca — sao forma, nao texto.
+       O cinza tambem desce (#909090 = 3.2:1 -> #6b6b6b = 5.3:1). */
+    .pagina--claro {
+      --doc-bg: #ffffff;
+      --doc-fg: #000000;
+      --doc-fg-rgb: 0 0 0;
+      --doc-mute: #6b6b6b;
+      --doc-yellow-txt: #946f00;
+      --doc-pink-txt: #c4469f;
+    }
 
     /* ===== Impressão ===== */
     @media print {
@@ -558,6 +584,8 @@
     }
 
     function numeroProposta(n, ano) {
+      // sem contador (banco fora do ar) mostra um traco em vez de "null/2026"
+      if (n == null) return "—";
       return `${String(n).padStart(4, "0")}/${ano}`;
     }
 
@@ -740,6 +768,8 @@
       const [validadeDias, setValidadeDias] = useState(30);
       // idioma do DOCUMENTO gerado (a interface do gerador segue em PT)
       const [idioma, setIdioma] = useState("pt");
+      // fundo do DOCUMENTO: "escuro" (identidade do site) ou "claro" (branco)
+      const [tema, setTema] = useState("escuro");
       const [servicos, setServicos] = useState([criarServicoVazio()]);
       const [cronograma, setCronograma] = useState([criarEtapaVazia()]);
       const [proximoNum, setProximoNum] = useState(null);
@@ -827,7 +857,7 @@
           const valorTotal = servicos.reduce((s, sv) => s + (parseFloat(sv.valor) || 0), 0);
           const campos = {
             cliente: cliente || "sem nome", apresentacao, servicos, cronograma,
-            validade_dias: validadeDias, valor_total: valorTotal, idioma,
+            validade_dias: validadeDias, valor_total: valorTotal, idioma, tema,
           };
 
           let linha, numeroFmt;
@@ -852,7 +882,7 @@
 
           setPropostaFinal({
             id: linha && linha.id, numeroFmt, cliente, apresentacao, servicos,
-            cronograma, validadeDias, idioma, data: linha && linha.criado_em,
+            cronograma, validadeDias, idioma, tema, data: linha && linha.criado_em,
           });
           setEditando(null);
           setTela("pronto");
@@ -864,6 +894,7 @@
         setApresentacao(p.apresentacao || "");
         setValidadeDias(p.validade_dias || 30);
         setIdioma(p.idioma || "pt");
+        setTema(p.tema || "escuro");
         setServicos(p.servicos && p.servicos.length ? p.servicos : [criarServicoVazio()]);
         setCronograma(p.cronograma && p.cronograma.length ? p.cronograma : [criarEtapaVazia()]);
         // duplicar = proposta nova, ganha numero novo ao salvar
@@ -952,7 +983,7 @@
                   <PropostaRender
                     numeroFmt={editando ? editando.numero_proposta : numeroProposta(proximoNum, new Date().getFullYear())}
                     cliente={cliente} apresentacao={apresentacao} servicos={servicos}
-                    cronograma={cronograma} validadeDias={validadeDias} idioma={idioma} />
+                    cronograma={cronograma} validadeDias={validadeDias} idioma={idioma} tema={tema} />
                 </div>
               </div>
             </div>
@@ -974,6 +1005,15 @@
                           className={"btn-idioma" + (idioma === i ? " is-ativo" : "")}
                           onClick={() => trocarIdioma(i)}>
                     {i.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+              <div className="seletor-idioma" title="fundo do documento gerado">
+                {[["escuro", "preto"], ["claro", "branco"]].map(([valor, rotulo]) => (
+                  <button key={valor}
+                          className={"btn-idioma" + (tema === valor ? " is-ativo" : "")}
+                          onClick={() => setTema(valor)}>
+                    {rotulo}
                   </button>
                 ))}
               </div>
@@ -1219,13 +1259,13 @@
       );
     }
 
-    function PropostaRender({ numeroFmt, cliente, apresentacao, servicos, cronograma, validadeDias, data, idioma = "pt" }) {
+    function PropostaRender({ numeroFmt, cliente, apresentacao, servicos, cronograma, validadeDias, data, idioma = "pt", tema = "escuro" }) {
       const t = T[idioma] || T.pt;
       // "data" so vem em proposta salva/reaberta. Sem ela (preview de proposta
       // nova) cai em hoje. Sem isso uma proposta antiga reaberta — ou aberta
       // pelo link — mostraria a data de hoje no cabecalho.
       return (
-        <div className="pagina">
+        <div className={"pagina" + (tema === "claro" ? " pagina--claro" : "")}>
           <header className="doc-cabecalho">
             <div>
               <div className="doc-marca">
@@ -1275,7 +1315,7 @@
 
               <div className="doc-metodo-grade">
                 {METODOLOGIA.map((fase) => (
-                  <div key={fase.letra} className="doc-metodo-linha" style={{ "--fase": "var(--rp-" + fase.cor + ")" }}>
+                  <div key={fase.letra} className="doc-metodo-linha" style={{ "--fase": "var(--rp-" + fase.cor + ")", "--fase-txt": "var(--doc-" + fase.cor + "-txt)" }}>
                     <span className="doc-metodo-nome"><b>{fase.letra}.</b> {tx(fase.nome, idioma)}</span>
                     <span className="doc-metodo-trilha">
                       {Array.from({ length: METODO_PASSOS }, (_, i) => (
@@ -1290,7 +1330,7 @@
 
               <div className="doc-metodo-etapas">
                 {METODOLOGIA.map((fase) => (
-                  <div key={fase.letra} className="doc-metodo-etapa" style={{ "--fase": "var(--rp-" + fase.cor + ")" }}>
+                  <div key={fase.letra} className="doc-metodo-etapa" style={{ "--fase": "var(--rp-" + fase.cor + ")", "--fase-txt": "var(--doc-" + fase.cor + "-txt)" }}>
                     <span className="doc-metodo-letra">{fase.letra}</span>
                     <p className="doc-metodo-txt">
                       <strong>{tx(fase.titulo, idioma)}</strong> {tx(fase.texto, idioma)}
@@ -1457,6 +1497,13 @@
         titulo = "Banco ainda não configurado";
         corpo = "Preencha SUPABASE_URL e SUPABASE_KEY no topo do index.html com os valores do banco provisionado no Vercel (Storage → o banco → Environment Variables), e rode supabase/schema.sql no SQL Editor.";
         url = SUPABASE_PAINEL_URL;
+      } else if (/42703|does not exist/.test(erro)) {
+        // coluna nova no codigo que ainda nao foi criada no banco
+        titulo = "O banco precisa de uma atualização";
+        corpo = "Uma coluna usada pelo gerador ainda não existe no Supabase (" +
+                ((erro.match(/column [\w.]+/) || [""])[0]) +
+                "). Rode no SQL Editor o comando de migração que veio junto com a atualização.";
+        url = SUPABASE_PAINEL_URL;
       } else if (erro === "ALLOWLIST") {
         titulo = "Acesso bloqueado pela allowlist do Supabase";
         corpo = "Seu projeto Supabase está com restrição de rede ativa. Acesse Settings → Network Restrictions no painel e libere o acesso.";
@@ -1495,7 +1542,7 @@
               id: p.id, numeroFmt: p.numero_proposta, cliente: p.cliente,
               apresentacao: p.apresentacao, servicos: p.servicos || [],
               cronograma: p.cronograma || [], validadeDias: p.validade_dias,
-              idioma: p.idioma || "pt", data: p.criado_em,
+              idioma: p.idioma || "pt", tema: p.tema || "escuro", data: p.criado_em,
             });
             document.title = `Proposta ${p.numero_proposta} · ${p.cliente}`;
           })
