@@ -688,6 +688,55 @@
           { cliente: "FCR · interface + dev", ano: 2022, modulos: 6, dias: 45, valor: 12000 },
         ],
       },
+      {
+        id: "cerimonia",
+        nome: "Motion para Cerimônia",
+        tituloPadrao: { pt: "Criação de motions — cerimônia de premiação", en: "Motion design — award ceremony" },
+        descricao: { pt: "Produção de todas as telas e animações necessárias para a cerimônia, a partir da identidade visual do evento. Valor fechado para o pacote, incluindo os ajustes de telas que surgirem ao longo do roteiro da cerimônia.", en: "Production of every screen and animation needed for the ceremony, built from the visual identity of the event. Fixed price for the package, including screen adjustments that come up as the ceremony script develops." },
+        // Baseado no pedido de producao 355.12 (Comus, BDA 25 — nov/2025):
+        // R$ 10.500 em 3 parcelas, 17 dias uteis entre o pedido (12/11) e a
+        // entrega (08/12). Os pesos por modulo somam esses 17 — a divisao
+        // entre eles e estimativa, so o total vem do pedido. Arredondado pra
+        // cima, o prazo sugerido sai 20.
+        // As quantidades (14 categorias, ~400 telas) sao as do BDA; editar
+        // no servico depois de aplicar, se o evento for outro.
+        modulos: [
+          { id: "abertura", rotulo: { pt: "vinheta de abertura", en: "opening sting" }, dias: 2, padrao: true,
+            conteudo: { pt: "vinheta de abertura da cerimônia, construída a partir da identidade visual do evento", en: "opening sting for the ceremony, built from the visual identity of the event" },
+            etapa: { pt: "Vinhetas de abertura, categorias e premiações", en: "Opening, category and award stings" } },
+          { id: "categorias", rotulo: { pt: "vinhetas das categorias", en: "category stings" }, dias: 4, padrao: true,
+            conteudo: { pt: "vinheta de apresentação de cada categoria premiada (14 categorias)", en: "an introduction sting for each award category (14 categories)" },
+            etapa: { pt: "Vinhetas de abertura, categorias e premiações", en: "Opening, category and award stings" } },
+          { id: "premiacoes", rotulo: { pt: "vinhetas das premiações", en: "award stings" }, dias: 3, padrao: true,
+            conteudo: { pt: "vinhetas de cada nível de premiação — bronze, prata, ouro, grand prix, destaques do ano e voto popular", en: "stings for each award level — bronze, silver, gold, grand prix, highlights of the year and people's choice" },
+            etapa: { pt: "Vinhetas de abertura, categorias e premiações", en: "Opening, category and award stings" } },
+          { id: "manifesto", rotulo: { pt: "animação do manifesto", en: "manifesto animation" }, dias: 2, padrao: true,
+            conteudo: { pt: "animação do texto-manifesto do evento", en: "animation of the event manifesto" },
+            etapa: { pt: "Animação do manifesto e encerramento", en: "Manifesto animation and closing" } },
+          { id: "encerramento", rotulo: { pt: "encerramento", en: "closing" }, dias: 2, padrao: true,
+            conteudo: { pt: "telas de encerramento com créditos, patrocinadores e equipe", en: "closing screens with credits, sponsors and team" },
+            etapa: { pt: "Animação do manifesto e encerramento", en: "Manifesto animation and closing" } },
+          { id: "premiados", rotulo: { pt: "telas dos premiados", en: "winner screens" }, dias: 2, padrao: true,
+            conteudo: { pt: "telas dos projetos premiados geradas por automação a partir da planilha de resultados — cerca de 400 telas", en: "winning project screens generated automatically from the results spreadsheet — around 400 screens" },
+            etapa: { pt: "Automação das telas dos premiados", en: "Automated winner screens" } },
+          { id: "transmissao", rotulo: { pt: "transmissão ao vivo", en: "live broadcast" }, dias: 1, padrao: true,
+            conteudo: { pt: "telas e arquivos para a transmissão ao vivo (1920 × 1080 px)", en: "screens and files for the live broadcast (1920 × 1080 px)" },
+            etapa: { pt: "Telas de transmissão e arquivos para o Resolume", en: "Broadcast screens and Resolume files" } },
+          { id: "resolume", rotulo: { pt: "arquivos para o Resolume", en: "Resolume files" }, dias: 1, padrao: true,
+            conteudo: { pt: "preparação e organização de todos os arquivos para operação no Resolume no dia do evento", en: "preparing and organising every file for playback in Resolume on the day of the event" },
+            etapa: { pt: "Telas de transmissão e arquivos para o Resolume", en: "Broadcast screens and Resolume files" } },
+        ],
+        etapasFixas: [],
+        // Preco atual, definido pelo Rodrigo (o pedido original foi R$ 10.500).
+        // So em pt: o valor e em REAL. Em ingles o campo fica vazio, senao
+        // R$ 11.000 viraria US$ 11,000 — tx() NAO e usado aqui de proposito,
+        // porque cairia no fallback pt.
+        valorPadrao: { pt: 11000 },
+        parcelas: { pt: "em 3 parcelas mensais", en: "in 3 monthly instalments" },
+        referencias: [
+          { cliente: "Comus · BDA 25", ano: 2025, modulos: 8, dias: 17, valor: 10500 },
+        ],
+      },
     ];
 
     // Arredonda pra cima no multiplo de 5 — nunca prometer menos prazo do que a conta deu.
@@ -715,8 +764,10 @@
       const servico = {
         titulo: tituloDoTemplate(template, marcados, idioma),
         prazo: `${prazo} ${T[idioma].diasUteis}`,
-        valor: "",
-        parcelas: idioma === "en" ? "50% upfront, 50% on delivery" : "50% no início e 50% na entrega",
+        valor: (template.valorPadrao && template.valorPadrao[idioma] != null)
+          ? String(template.valorPadrao[idioma]) : "",
+        parcelas: template.parcelas ? tx(template.parcelas, idioma)
+          : (idioma === "en" ? "50% upfront, 50% on delivery" : "50% no início e 50% na entrega"),
         descricao,
         itens: escolhidos.map((m) => ({ rotulo: tx(m.rotulo, idioma), conteudo: tx(m.conteudo, idioma) })),
       };
@@ -1476,7 +1527,11 @@
                     </div>
                   ))}
                   <p className="template-refs-obs">
-                    Valores de 2022 — servem de referência, não de preço. O campo de valor entra vazio de propósito.
+                    {template.valorPadrao && template.valorPadrao[idioma] != null
+                      ? <>Este template já entra com <strong>{formatarValor(template.valorPadrao[idioma], idioma)}</strong>, o preço atual. As referências acima são o que foi cobrado na época.</>
+                      : template.valorPadrao
+                        ? <>O preço deste template é em real, então em inglês o valor entra vazio — defina o preço em dólar.</>
+                        : <>Valores antigos — servem de referência, não de preço. O campo de valor entra vazio de propósito.</>}
                   </p>
                 </div>
 
