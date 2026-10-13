@@ -64,3 +64,15 @@ python3 -m http.server 4188
 ```
 
 E abrir <http://localhost:4188>.
+
+## Manter o banco acordado
+
+O Supabase gratuito pausa o projeto depois de ~7 dias sem atividade de banco.
+`api/manter-banco.js` faz uma leitura real em `proposta_contador`, e a Vercel
+chama essa função **uma vez por dia** (`crons` no `vercel.json`, 12h UTC = 9h
+de Brasília — no plano Hobby o mínimo é diário e o horário varia em até 59 min).
+
+- Só leitura: não chama a RPC do contador, que incrementaria a numeração.
+- Para testar na mão: abrir `/api/manter-banco`. `{"ok": true}` = banco
+  respondeu; HTTP 502 = o projeto já pausou e precisa ser restaurado no painel.
+- O agendamento não ressuscita projeto pausado — só impede que pause.
