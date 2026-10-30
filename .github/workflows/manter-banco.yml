@@ -1,0 +1,39 @@
+# Segundo agendamento para manter o Supabase gratuito acordado — independente
+# da Vercel (api/manter-banco.js). Roda a cada 6 horas e grava um ping no
+# banco (RPC registrar_ping, origem "github").
+#
+# Se o banco nao responder, o job FALHA e o GitHub manda e-mail avisando —
+# e o alarme de que o projeto pausou.
+#
+# Atencao: o GitHub desativa agendamentos de repositorios sem nenhum commit
+# por 60 dias (e avisa por e-mail antes). Um commit qualquer reativa.
+
+name: manter banco acordado
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"   # minuto 17 de proposito: hora cheia congestiona e atrasa
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: registrar ping no Supabase
+        env:
+          SUPABASE_URL: https://juohkexddpvcrzugjjud.supabase.co
+          SUPABASE_KEY: sb_publishable_k2l_n-Jg4oJ2jj5bpbX3wg_Gbf-3aJK
+        run: |
+          code=$(curl -sS --max-time 30 -o resposta.txt -w "%{http_code}" -X POST \
+            -H "apikey: $SUPABASE_KEY" -H "Content-Type: application/json" \
+            -d '{"p_origem":"github"}' "$SUPABASE_URL/rest/v1/rpc/registrar_ping" || echo 000)
+          echo "registrar_ping -> HTTP $code: $(head -c 300 resposta.txt)"
+          if [ "$code" = "200" ]; then exit 0; fi
+          if [ "$code" = "404" ]; then
+            echo "RPC ausente (migracao 005 nao rodou) — fazendo leitura real"
+            curl -sS --fail --max-time 30 -H "apikey: $SUPABASE_KEY" \
+              "$SUPABASE_URL/rest/v1/proposta_contador?select=proximo_numero" && exit 0
+          fi
+          echo "::error::O banco nao respondeu (HTTP $code). Provavelmente pausou — restaure no painel do Supabase."
+          exit 1
